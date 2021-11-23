@@ -113,7 +113,7 @@ function ProjectAvatar(props) {
         reloadProjects={props.reloadProjects}
         handleClose={() => setAddRepoDialogOpen(false)}
         projectId={props.project.projectId}
-//         repoType={wantedRepoType}
+        repoType={wantedRepoType}
       />
     </div>
   )
