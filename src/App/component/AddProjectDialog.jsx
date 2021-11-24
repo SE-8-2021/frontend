@@ -24,7 +24,7 @@ export default function AddProjectDialog({open, reloadProjects, handleClose}) {
         .then((response) => {
           if (response.includes(false) === false) {
             let payload = {
-              projectName: projectName,
+              projectName,
               githubRepositoryURL: "",
               sonarRepositoryURL: ""
             } // 傳空的repository
