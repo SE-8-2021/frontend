@@ -21,30 +21,22 @@ export default function AddProjectDialog({open, reloadProjects, handleClose}) {
       return
     } 
 
-    Promise.all(checker)
-      .then((response) => {
-        if (response.includes(false) === false) {
-          let payload = {
-            projectName,
-            githubRepositoryURL: "",
-            sonarRepositoryURL: ""
-          } // 傳空的repository
+    let payload = {
+      projectName,
+      githubRepositoryURL: "",
+      sonarRepositoryURL: ""
+    } // 傳空的repository
 
-          Axios.post("http://localhost:9100/pvs-api/project", payload,
-            {headers: {"Authorization": `${jwtToken}`}})
-            .then(() => {
-              reloadProjects()
-              handleClose()
-            })
-            .catch((e) => {
-              alert(e.response.status)
-              console.error(e)
-            }) // 回傳project name給後端去create project
-        }
-      }).catch((e) => {
-      alert(e.response.status)
-      console.error(e)
-    })
+    Axios.post("http://localhost:9100/pvs-api/project", payload,
+      {headers: {"Authorization": `${jwtToken}`}})
+      .then(() => {
+        reloadProjects()
+        handleClose()
+      })
+      .catch((e) => {
+        alert(e.response.status)
+        console.error(e)
+      }) // 回傳project name給後端去create project
   }
 
   // 刷新
