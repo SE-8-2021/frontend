@@ -16,7 +16,6 @@ export default function AddProjectDialog({open, reloadProjects, handleClose}) {
   const jwtToken = localStorage.getItem("jwtToken")
 
   const createProject = () => {
-    let checker = []
     if (projectName === "") {
       alert("不準啦馬的>///<")
     } else {
