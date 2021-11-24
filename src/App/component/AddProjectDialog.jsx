@@ -75,3 +75,4 @@ export default function AddProjectDialog({open, reloadProjects, handleClose}) {
     </Dialog>
   )
 }
+
