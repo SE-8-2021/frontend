@@ -8,6 +8,7 @@ import AddIcon from '@material-ui/icons/Add';
 import AddRepositoryDialog from './AddRepositoryDialog';
 import {connect} from 'react-redux'
 import {setCurrentProjectId} from '../../redux/action'
+import Axios from 'axios'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -83,6 +84,9 @@ function ProjectAvatar(props) {
     <div>
       <Box className={props.size === 'large' ? classes.large : classes.small}>
         <CardActionArea onClick={goToDashboard}>
+        {props.size === 'large' &&
+        <button>X</button>
+        }
           <Avatar alt="first repository" src={props.project.avatarURL} className={classes.avatar}/>
           {props.size === 'large' &&
           <p style={{"textAlign": "center"}}>{props.project.projectName}</p>
