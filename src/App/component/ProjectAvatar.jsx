@@ -48,7 +48,7 @@ function ProjectAvatar(props) {
   const [wantedRepoType, setWantedRepoType] = useState("")
   const [hasGithubRepo, setHasGithubRepo] = useState(false)
   const [hasSonarRepo, setHasSonarRepo] = useState(false)
-  const [deletionAlert, setDeletionAlert] = useState(false)
+  const [deletionAlertDialog, setDeletionAlertDialog] = useState(false)
   const jwtToken = localStorage.getItem("jwtToken")
 
   useEffect(() => {
@@ -90,19 +90,15 @@ function ProjectAvatar(props) {
     setAddRepoDialogOpen(true)
   }
 
-  const openDeletionAlert = () => {
-    setDeletionAlert(true)
-  }
-
-  const closeDeletionAlert = () => {
-    setDeletionAlert(false)
+  const toggleDeletionAlertDialog = () => {
+    setDeletionAlertDialog(!deletionAlertDialog)
   }
 
   const deleteProject = () => {
     Axios.post(`http://localhost:9100/pvs-api/project/remove/${props.project.projectId}`, "",
       {headers: {"Authorization": `${jwtToken}`}})
       .then(() => {
-        closeDeletionAlert()
+        toggleDeletionAlertDialog()
         props.reloadProjects()
       })
       .catch((e) => {
@@ -115,11 +111,11 @@ function ProjectAvatar(props) {
     <div>
       <Box className={props.size === 'large' ? classes.large : classes.small}>
       {props.size === 'large' &&
-      <Button onClick={openDeletionAlert}>X</Button>
+      <Button onClick={toggleDeletionAlertDialog}>X</Button>
       }
       <Dialog
-      open={deletionAlert}
-      onClose={closeDeletionAlert}
+      open={deletionAlertDialog}
+      onClose={toggleDeletionAlertDialog}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description">
         <DialogTitle id="alert-dialog-title">
@@ -131,7 +127,7 @@ function ProjectAvatar(props) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeDeletionAlert}>Back</Button>
+          <Button onClick={toggleDeletionAlertDialog}>Back</Button>
           <Button onClick={deleteProject} autoFocus>
             Delete
           </Button>
