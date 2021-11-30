@@ -123,7 +123,7 @@ function ProjectAvatar(props) {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            If you delete the project, you cannot restore it.
+            You can restore it after deleting.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
