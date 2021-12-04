@@ -49,7 +49,7 @@ function ProjectAvatar(props) {
   const [hasGithubRepo, setHasGithubRepo] = useState(false)
   const [hasSonarRepo, setHasSonarRepo] = useState(false)
   const [deletionAlertDialog, setDeletionAlertDialog] = useState(false)
-  const jwtToken = localStorage.getItem("jwtToken")
+  const jwt = localStorage.getItem("jwtToken")
 
   useEffect(() => {
     if (props.size === 'large') {
@@ -96,7 +96,7 @@ function ProjectAvatar(props) {
 
   const deleteProject = () => {
     Axios.post(`http://localhost:9100/pvs-api/project/remove/${props.project.projectId}`, "",
-      {headers: {"Authorization": `${jwtToken}`}})
+      {headers: {...(jwt && {"Authorization": jwt})}})  // If jwt is null, it will return {} to headers. Otherwise it will return {"Authorization": jwt}
       .then(() => {
         toggleDeletionAlertDialog()
         props.reloadProjects()
@@ -123,7 +123,7 @@ function ProjectAvatar(props) {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            You can restore it after deleting.
+            You cannot restore it after deleting.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
