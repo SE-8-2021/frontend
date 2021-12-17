@@ -95,14 +95,13 @@ function ProjectAvatar(props) {
   }
 
   const deleteProject = () => {
-    Axios.post(`http://localhost:9100/pvs-api/project/remove/${props.project.projectId}`, "",
+    Axios.delete(`http://localhost:9100/pvs-api/project/remove/${props.project.projectId}`,
       {headers: {...(jwt && {"Authorization": jwt})}})  // If jwt is null, it will return {} to headers. Otherwise it will return {"Authorization": jwt}
       .then(() => {
         toggleDeletionAlertDialog()
         props.reloadProjects()
       })
       .catch((e) => {
-        alert(e.response.status)
         console.error(e)
       })
   }
