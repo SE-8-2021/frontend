@@ -181,16 +181,16 @@ function Sidebar(prop) {
             </ListItemIcon>
             <ListItemText primary="Select"/>
           </ListItem>
+          <Divider/>
 
           {/* dashboard UI button */}
-          <Divider className={classes.divider}/>
           <ListItem button onClick={goToDashBoard}>
             <ListItemIcon>
               <RiDashboardFill size={30}/>
             </ListItemIcon>
             <ListItemText primary="DashBoard"/>
           </ListItem>
-          <Divider className={classes.divider}/>
+          <Divider/>
 
           {/* github metrics UI button */}
           {currentProject &&
@@ -205,14 +205,15 @@ function Sidebar(prop) {
               <ListItemText primary="GitHub"/>
               {githubMenuOpen ? <ExpandLess/> : <ExpandMore/>}
             </ListItem>
-
             <Divider/>
+
             <Collapse in={githubMenuOpen} timeout="auto" unmountOnExit>
               <List component="div" disablePadding className={classes.innerList}>
                 {smallListItem("Commits", IoGitCommitSharp, goToCommit)}
                 {smallListItem("Issues", GoIssueOpened, goToIssue)}
                 {smallListItem("Code Base", Code, goToCodeBase)}
               </List>
+              <Divider/>
             </Collapse>
           </div>
           }
@@ -228,16 +229,17 @@ function Sidebar(prop) {
                 <SiGitlab size={30}/>
               </ListItemIcon>
               <ListItemText primary="GitLab"/>
-                {gitlabMenuOpen ? <ExpandLess/> : <ExpandMore/>}
+              {gitlabMenuOpen ? <ExpandLess/> : <ExpandMore/>}
             </ListItem>
+            <Divider/>
 
-              <Divider/>
-              <Collapse in={gitlabMenuOpen} timeout="auto" unmountOnExit>
+            <Collapse in={gitlabMenuOpen} timeout="auto" unmountOnExit>
               <List component="div" disablePadding className={classes.innerList}>
                 {smallListItem("Commits", IoGitCommitSharp, goToCommit)}
                 {smallListItem("Issues", GoIssueOpened, goToIssue)}
                 {smallListItem("Code Base", Code, goToCodeBase)}
               </List>
+              <Divider/>
             </Collapse>
           </div>
           }
@@ -246,7 +248,6 @@ function Sidebar(prop) {
           {currentProject &&
           currentProject.repositoryDTOList.find(x => x.type === "sonar") &&
           <div>
-            <Divider className={classes.divider}/>
             <ListItem button onClick={() => {
               setSonarMenuOpen(!sonarMenuOpen)
             }}>
@@ -258,6 +259,7 @@ function Sidebar(prop) {
               {sonarMenuOpen ? <ExpandLess/> : <ExpandMore/>}
             </ListItem>
             <Divider/>
+
             <Collapse in={sonarMenuOpen} timeout="auto" unmountOnExit>
               <List component="div" disablePadding className={classes.innerList}>
                 {smallListItem("Code Coverage", GpsFixed, goToCodeCoverage)}
@@ -281,14 +283,15 @@ function Sidebar(prop) {
                 <SiTrello size={30}/>
               </ListItemIcon>
               <ListItemText primary="Trello"/>
-                {trelloMenuOpen ? <ExpandLess/> : <ExpandMore/>}
+              {trelloMenuOpen ? <ExpandLess/> : <ExpandMore/>}
             </ListItem>
-
             <Divider/>
+
             <Collapse in={trelloMenuOpen} timeout="auto" unmountOnExit>
               <List component="div" disablePadding className={classes.innerList}>
                 {smallListItem("board", IoGitCommitSharp, goToTrelloBoard)}
               </List>
+              <Divider/>
             </Collapse>
           </div>
           }
