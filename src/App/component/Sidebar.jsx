@@ -159,7 +159,7 @@ function Sidebar(prop) {
   const [sonarMenuOpen, setSonarMenuOpen] = useState(true)
   const [trelloMenuOpen, setTrelloMenuOpen] = useState(true)
 
-  const titleListItem = (text, Icon, open, setOpen) => (
+  const buildTitleListItem = (text, Icon, open, setOpen) => (
     <ListItem button onClick={() => {
       setOpen(!open)
     }}>
@@ -171,7 +171,7 @@ function Sidebar(prop) {
     </ListItem>
   )
 
-  const smallListItem = (text, Icon, onClick) => (
+  const buildSmallListItem = (text, Icon, onClick) => (
     <ListItem button onClick={onClick}>
       <ListItemIcon>
         <Icon size={24.5}/>
@@ -180,7 +180,7 @@ function Sidebar(prop) {
     </ListItem>
   )
 
-  const list = () => (
+  const buildSidebarList = () => (
     <div className={classes.list} role="presentation">
       <List className={classes.menuList} width="inher">
         {prop.currentProjectId !== 0 &&
@@ -208,14 +208,14 @@ function Sidebar(prop) {
           {currentProject &&
           currentProject.repositoryDTOList.find(x => x.type === "github") &&
           <div>
-            {titleListItem("GitHub", SiGithub, githubMenuOpen, setGithubMenuOpen)}
+            {buildTitleListItem("GitHub", SiGithub, githubMenuOpen, setGithubMenuOpen)}
             <Divider/>
 
             <Collapse in={githubMenuOpen} timeout="auto" unmountOnExit>
               <List component="div" disablePadding className={classes.innerList}>
-                {smallListItem("Commits", IoGitCommitSharp, goToCommit)}
-                {smallListItem("Issues", GoIssueOpened, goToIssue)}
-                {smallListItem("Code Base", Code, goToCodeBase)}
+                {buildSmallListItem("Commits", IoGitCommitSharp, goToCommit)}
+                {buildSmallListItem("Issues", GoIssueOpened, goToIssue)}
+                {buildSmallListItem("Code Base", Code, goToCodeBase)}
               </List>
               <Divider/>
             </Collapse>
@@ -226,14 +226,14 @@ function Sidebar(prop) {
           {currentProject &&
           currentProject.repositoryDTOList.find(x => x.type === "gitlab") &&
           <div>
-            {titleListItem("GitLab", SiGitlab, gitlabMenuOpen, setGitlabMenuOpen)}
+            {buildTitleListItem("GitLab", SiGitlab, gitlabMenuOpen, setGitlabMenuOpen)}
             <Divider/>
 
             <Collapse in={gitlabMenuOpen} timeout="auto" unmountOnExit>
               <List component="div" disablePadding className={classes.innerList}>
-                {smallListItem("Commits", IoGitCommitSharp, goToCommit)}
-                {smallListItem("Issues", GoIssueOpened, goToIssue)}
-                {smallListItem("Code Base", Code, goToCodeBase)}
+                {buildSmallListItem("Commits", IoGitCommitSharp, goToCommit)}
+                {buildSmallListItem("Issues", GoIssueOpened, goToIssue)}
+                {buildSmallListItem("Code Base", Code, goToCodeBase)}
               </List>
               <Divider/>
             </Collapse>
@@ -244,15 +244,15 @@ function Sidebar(prop) {
           {currentProject &&
           currentProject.repositoryDTOList.find(x => x.type === "sonar") &&
           <div>
-            {titleListItem("SonarQube", SiSonarqube, sonarMenuOpen, setSonarMenuOpen)}
+            {buildTitleListItem("SonarQube", SiSonarqube, sonarMenuOpen, setSonarMenuOpen)}
             <Divider/>
 
             <Collapse in={sonarMenuOpen} timeout="auto" unmountOnExit>
               <List component="div" disablePadding className={classes.innerList}>
-                {smallListItem("Code Coverage", GpsFixed, goToCodeCoverage)}
-                {smallListItem("Bugs", AiFillBug, goToBug)}
-                {smallListItem("Code Smells", IoNuclear, goToCodeSmell)}
-                {smallListItem("Duplications", HiDocumentDuplicate, goToDuplication)}
+                {buildSmallListItem("Code Coverage", GpsFixed, goToCodeCoverage)}
+                {buildSmallListItem("Bugs", AiFillBug, goToBug)}
+                {buildSmallListItem("Code Smells", IoNuclear, goToCodeSmell)}
+                {buildSmallListItem("Duplications", HiDocumentDuplicate, goToDuplication)}
               </List>
               <Divider/>
             </Collapse>
@@ -263,12 +263,12 @@ function Sidebar(prop) {
           {currentProject &&
           currentProject.repositoryDTOList.find(x => x.type === "trello") &&
           <div>
-            {titleListItem("Trello", SiTrello, trelloMenuOpen, setTrelloMenuOpen)}
+            {buildTitleListItem("Trello", SiTrello, trelloMenuOpen, setTrelloMenuOpen)}
             <Divider/>
 
             <Collapse in={trelloMenuOpen} timeout="auto" unmountOnExit>
               <List component="div" disablePadding className={classes.innerList}>
-                {smallListItem("board", IoGitCommitSharp, goToTrelloBoard)}
+                {buildSmallListItem("board", IoGitCommitSharp, goToTrelloBoard)}
               </List>
               <Divider/>
             </Collapse>
@@ -399,7 +399,7 @@ function Sidebar(prop) {
       >
         <div className={classes.drawerContent}/>
         <Divider/>
-        {list()}
+        {buildSidebarList()}
       </Drawer>
       <main className={classes.content}>
         <div className={classes.drawerContent}/>
