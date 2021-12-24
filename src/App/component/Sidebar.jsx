@@ -159,6 +159,15 @@ function Sidebar(prop) {
   const [sonarMenuOpen, setSonarMenuOpen] = useState(true)
   const [trelloMenuOpen, setTrelloMenuOpen] = useState(true)
 
+  const smallListItem = (text, Icon, onClick) => (
+    <ListItem button onClick={onClick}>
+      <ListItemIcon>
+        <Icon size={24.5}/>
+      </ListItemIcon>
+      <ListItemText primary={text}/>
+    </ListItem>
+  )
+
   const list = () => (
     <div className={classes.list} role="presentation">
       <List className={classes.menuList} width="inher">
@@ -200,26 +209,9 @@ function Sidebar(prop) {
             <Divider/>
             <Collapse in={githubMenuOpen} timeout="auto" unmountOnExit>
               <List component="div" disablePadding className={classes.innerList}>
-                <ListItem button className={classes.nested} onClick={goToCommit}>
-                  <ListItemIcon>
-                    <IoGitCommitSharp size={24.5}/>
-                  </ListItemIcon>
-                  <ListItemText primary="Commits"/>
-                </ListItem>
-
-                <ListItem button className={classes.nested} onClick={goToIssue}>
-                  <ListItemIcon>
-                    <GoIssueOpened size={24.5}/>
-                  </ListItemIcon>
-                  <ListItemText primary="Issues"/>
-                </ListItem>
-
-                <ListItem button className={classes.nested} onClick={goToCodeBase}>
-                  <ListItemIcon>
-                    <Code/>
-                  </ListItemIcon>
-                  <ListItemText primary="Code Base"/>
-                </ListItem>
+                {smallListItem("Commits", IoGitCommitSharp, goToCommit)}
+                {smallListItem("Issues", GoIssueOpened, goToIssue)}
+                {smallListItem("Code Base", Code, goToCodeBase)}
               </List>
             </Collapse>
           </div>
@@ -237,31 +229,14 @@ function Sidebar(prop) {
               </ListItemIcon>
               <ListItemText primary="GitLab"/>
                 {gitlabMenuOpen ? <ExpandLess/> : <ExpandMore/>}
-              </ListItem>
+            </ListItem>
 
               <Divider/>
               <Collapse in={gitlabMenuOpen} timeout="auto" unmountOnExit>
               <List component="div" disablePadding className={classes.innerList}>
-                <ListItem button className={classes.nested} onClick={goToCommit}>
-                  <ListItemIcon>
-                    <IoGitCommitSharp size={24.5}/>
-                  </ListItemIcon>
-                  <ListItemText primary="Commits"/>
-                </ListItem>
-
-                <ListItem button className={classes.nested} onClick={goToIssue}>
-                  <ListItemIcon>
-                    <GoIssueOpened size={24.5}/>
-                  </ListItemIcon>
-                  <ListItemText primary="Issues"/>
-                </ListItem>
-
-                <ListItem button className={classes.nested} onClick={goToCodeBase}>
-                  <ListItemIcon>
-                    <Code/>
-                  </ListItemIcon>
-                  <ListItemText primary="Code Base"/>
-                </ListItem>
+                {smallListItem("Commits", IoGitCommitSharp, goToCommit)}
+                {smallListItem("Issues", GoIssueOpened, goToIssue)}
+                {smallListItem("Code Base", Code, goToCodeBase)}
               </List>
             </Collapse>
           </div>
@@ -285,33 +260,10 @@ function Sidebar(prop) {
             <Divider/>
             <Collapse in={sonarMenuOpen} timeout="auto" unmountOnExit>
               <List component="div" disablePadding className={classes.innerList}>
-                <ListItem button onClick={goToCodeCoverage}>
-                  <ListItemIcon>
-                    <GpsFixed/>
-                  </ListItemIcon>
-                  <ListItemText primary="Code Coverage"/>
-                </ListItem>
-
-                <ListItem button onClick={goToBug}>
-                  <ListItemIcon>
-                    <AiFillBug size={24.5}/>
-                  </ListItemIcon>
-                  <ListItemText primary="Bugs"/>
-                </ListItem>
-
-                <ListItem button onClick={goToCodeSmell}>
-                  <ListItemIcon>
-                    <IoNuclear size={24.5}/>
-                  </ListItemIcon>
-                  <ListItemText primary="Code Smells"/>
-                </ListItem>
-
-                <ListItem button onClick={goToDuplication}>
-                  <ListItemIcon>
-                    <HiDocumentDuplicate size={24.5}/>
-                  </ListItemIcon>
-                  <ListItemText primary="Duplications"/>
-                </ListItem>
+                {smallListItem("Code Coverage", GpsFixed, goToCodeCoverage)}
+                {smallListItem("Bugs", AiFillBug, goToBug)}
+                {smallListItem("Code Smells", IoNuclear, goToCodeSmell)}
+                {smallListItem("Duplications", HiDocumentDuplicate, goToDuplication)}
               </List>
               <Divider/>
             </Collapse>
@@ -335,14 +287,7 @@ function Sidebar(prop) {
             <Divider/>
             <Collapse in={trelloMenuOpen} timeout="auto" unmountOnExit>
               <List component="div" disablePadding className={classes.innerList}>
-
-                <ListItem button className={classes.nested} onClick={goToTrelloBoard}>
-                  <ListItemIcon>
-                    <IoGitCommitSharp size={24.5}/>
-                  </ListItemIcon>
-                  <ListItemText primary="board"/>
-                </ListItem>
-
+                {smallListItem("board", IoGitCommitSharp, goToTrelloBoard)}
               </List>
             </Collapse>
           </div>
