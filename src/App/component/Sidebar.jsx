@@ -159,6 +159,18 @@ function Sidebar(prop) {
   const [sonarMenuOpen, setSonarMenuOpen] = useState(true)
   const [trelloMenuOpen, setTrelloMenuOpen] = useState(true)
 
+  const titleListItem = (text, Icon, open, setOpen) => (
+    <ListItem button onClick={() => {
+      setOpen(!open)
+    }}>
+      <ListItemIcon>
+        <Icon size={30}/>
+      </ListItemIcon>
+      <ListItemText primary={text}/>
+      {open ? <ExpandLess/> : <ExpandMore/>}
+    </ListItem>
+  )
+
   const smallListItem = (text, Icon, onClick) => (
     <ListItem button onClick={onClick}>
       <ListItemIcon>
@@ -196,15 +208,7 @@ function Sidebar(prop) {
           {currentProject &&
           currentProject.repositoryDTOList.find(x => x.type === "github") &&
           <div>
-            <ListItem button onClick={() => {
-              setGithubMenuOpen(!githubMenuOpen)
-            }}>
-              <ListItemIcon>
-                <SiGithub size={30}/>
-              </ListItemIcon>
-              <ListItemText primary="GitHub"/>
-              {githubMenuOpen ? <ExpandLess/> : <ExpandMore/>}
-            </ListItem>
+            {titleListItem("GitHub", SiGithub, githubMenuOpen, setGithubMenuOpen)}
             <Divider/>
 
             <Collapse in={githubMenuOpen} timeout="auto" unmountOnExit>
@@ -222,15 +226,7 @@ function Sidebar(prop) {
           {currentProject &&
           currentProject.repositoryDTOList.find(x => x.type === "gitlab") &&
           <div>
-            <ListItem button onClick={() => {
-              setGitlabMenuOpen(!gitlabMenuOpen)
-            }}>
-              <ListItemIcon>
-                <SiGitlab size={30}/>
-              </ListItemIcon>
-              <ListItemText primary="GitLab"/>
-              {gitlabMenuOpen ? <ExpandLess/> : <ExpandMore/>}
-            </ListItem>
+            {titleListItem("GitLab", SiGitlab, gitlabMenuOpen, setGitlabMenuOpen)}
             <Divider/>
 
             <Collapse in={gitlabMenuOpen} timeout="auto" unmountOnExit>
@@ -248,16 +244,7 @@ function Sidebar(prop) {
           {currentProject &&
           currentProject.repositoryDTOList.find(x => x.type === "sonar") &&
           <div>
-            <ListItem button onClick={() => {
-              setSonarMenuOpen(!sonarMenuOpen)
-            }}>
-
-              <ListItemIcon>
-                <SiSonarqube size={30}/>
-              </ListItemIcon>
-              <ListItemText primary="SonarQube"/>
-              {sonarMenuOpen ? <ExpandLess/> : <ExpandMore/>}
-            </ListItem>
+            {titleListItem("SonarQube", SiSonarqube, sonarMenuOpen, setSonarMenuOpen)}
             <Divider/>
 
             <Collapse in={sonarMenuOpen} timeout="auto" unmountOnExit>
@@ -276,15 +263,7 @@ function Sidebar(prop) {
           {currentProject &&
           currentProject.repositoryDTOList.find(x => x.type === "trello") &&
           <div>
-            <ListItem button onClick={() => {
-              setTrelloMenuOpen(!trelloMenuOpen)
-            }}>
-              <ListItemIcon>
-                <SiTrello size={30}/>
-              </ListItemIcon>
-              <ListItemText primary="Trello"/>
-              {trelloMenuOpen ? <ExpandLess/> : <ExpandMore/>}
-            </ListItem>
+            {titleListItem("Trello", SiTrello, trelloMenuOpen, setTrelloMenuOpen)}
             <Divider/>
 
             <Collapse in={trelloMenuOpen} timeout="auto" unmountOnExit>
