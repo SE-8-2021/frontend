@@ -169,6 +169,15 @@ function Sidebar(prop) {
             </ListItem>
             <Divider />
 
+            {/* dashboard1 UI button
+            <ListItem button onClick={goToDashBoard1}>
+              <ListItemIcon>
+                <RiDashboardFill size={30} />
+              </ListItemIcon>
+              <ListItemText primary="DashBoard1" />
+            </ListItem>
+            <Divider /> */}
+
             {/* github metrics UI button */}
             {currentProject &&
               currentProject.repositoryDTOList.find(x => x.type === "github") &&
@@ -259,6 +268,10 @@ function Sidebar(prop) {
   const goToDashBoard = () => {
     history.push("/dashboard")
   }
+
+  // const goToDashBoard1 = () => {
+  //   history.push("/dashboard1")
+  // }
 
   const goToCommit = () => {
     history.push("/commits")

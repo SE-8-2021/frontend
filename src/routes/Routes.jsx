@@ -1,6 +1,6 @@
 import Login from '../App/component/Login'
 import SelectProject from '../App/component/SelectProject'
-import DashboardPage from '../App/component/DashboardPage'
+import DashBoardPage from '../App/component/DashboardPage'
 import CommitsPage from '../App/component/CommitsPage'
 import IssuesPage from '../App/component/IssuesPage'
 import CodeBasePage from '../App/component/CodeBasePage'
@@ -15,7 +15,7 @@ const routes = [
   {path: "/", redirect: true, to: "/select"},
   {path: "/login", component: Login, loginRequired: false},
   {path: "/select", component: SelectProject, loginRequired: true},
-  {path: "/dashboard", component: DashboardPage, loginRequired: true},
+  {path: "/dashboard", component: DashBoardPage, loginRequired: true},
   {path: "/commits", component: CommitsPage, loginRequired: true},
   {path: "/issues", component: IssuesPage, loginRequired: true},
   {path: "/codebase", component: CodeBasePage, loginRequired: true},
