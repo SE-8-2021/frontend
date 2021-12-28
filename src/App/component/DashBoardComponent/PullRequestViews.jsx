@@ -45,74 +45,66 @@ const useStyles = makeStyles(() => ({
 function PullRequestsViews(prop) {
   const classes = useStyles()
   const [jobs, setJobs] = useState([])
-  const [pullRequestListData, setPullRequestListData] = useState([])
   const [currentProject, setCurrentProject] = useState({})
-
+  const [pullRequestListData, setPullRequestListData] = useState([])
   const projectId = localStorage.getItem("projectId")
   const jwtToken = localStorage.getItem("jwtToken")
 
-  const [open, setOpen] = useState(false);
-  const handleClose = () => {
-    setOpen(false);
-  };
-  const handleToggle = () => {
-    setOpen(!open);
-  };
-
   useEffect(() => {
-    Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
-      { headers: { "Authorization": `${jwtToken}` } })
-      .then((response) => {
+    const fetchCurrentProject = async () => {
+      try {
+        const response = await Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
+          { headers: { "Authorization": `${jwtToken}` } })
         setCurrentProject(response.data)
-      })
-      .catch((e) => {
+      } catch (e) {
         alert(e.response?.status)
         console.error(e)
-      })
+      }
+    }
+    fetchCurrentProject()
   }, [])
 
-  const getPullRequestsFromGitHub = () => {
+  const getPullRequestsFromGitHub = async () => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     if (githubRepo !== undefined) {
       const query = githubRepo.url.split("github.com/")[1]
-
-      // todo need reafctor with async
-      Axios.get(`http://localhost:9100/pvs-api/github/pullRequests/${query}`,
-        { headers: { "Authorization": `${jwtToken}` } })
-        .then((response) => {
-          if (response?.data) {
-            setPullRequestListData(response.data)
-          }
-        })
-        .catch((e) => {
-          alert(e.response?.status);
-          console.error(e)
-        })
+      try {
+        const response = await Axios.get(`http://localhost:9100/pvs-api/github/pullRequests/${query}`,
+          { headers: { "Authorization": `${jwtToken}` } })
+        setPullRequestListData(response.data)
+      } catch (e) {
+        alert(e.response?.status);
+        console.error(e)
+      }
     }
   }
 
   useEffect(() => {
     if (Object.keys(currentProject).length !== 0) {
-      handleToggle()
       getPullRequestsFromGitHub()
-      handleClose()
     }
   }, [currentProject, prop.startMonth, prop.endMonth])
 
   //Get created count and merged count of pull requests
   useEffect(() => {
-    getCreated()
-    getMerged()
+    // Only triger the page rendering once
+    const calculateData = async () => {
+      await Promise.all([
+        getPullRequestCreatedCount(),
+        getPullRequestMergedCount()
+      ])
+    }
+    calculateData()
   }, [pullRequestListData, prop.startMonth, prop.endMonth])
 
-  const getCreated = () => {
+  const getPullRequestCreatedCount = () => {
     const { endMonth } = prop
 
     let chartDataset = { created: 0 }
     let month = moment(endMonth)
     let pullRequestListDataSortedByCreatedAt = pullRequestListData
     let index
-    
+
     // Sort data by date
     if (pullRequestListData !== undefined) {
       [].slice.call(pullRequestListDataSortedByCreatedAt).sort((a, b) => a.createdAt - b.createdAt);
@@ -125,11 +117,11 @@ function PullRequestsViews(prop) {
       })
       chartDataset.created = (index === -1 ? pullRequestListData.length : index)
     }
-    
-    setCreated(chartDataset)
+
+    setPullRequestCreatedCount(chartDataset)
   }
 
-  const getMerged = () => {
+  const getPullRequestMergedCount = () => {
     const { endMonth } = prop
 
     let chartDataset = { merged: 0 }
@@ -137,7 +129,7 @@ function PullRequestsViews(prop) {
     let pullRequestListDataSortedByMergedAt = pullRequestListData
     let index
     let noMergeCount = 0
-    
+
     // Sort data by date
     if (pullRequestListData !== undefined) {
       [].slice.call(pullRequestListDataSortedByMergedAt).sort((a, b) => a.mergedAt - b.mergedAt);
@@ -154,20 +146,20 @@ function PullRequestsViews(prop) {
       })
       chartDataset.merged = (index === -1 ? pullRequestListData.length - noMergeCount : index)
     }
-    
-    setMerged(chartDataset)
+
+    setPullRequestMergedCount(chartDataset)
   }
 
-  const setCreated = (chartDataset) => {
-    let job = { id:{}, job:{}, views:{} }
+  const setPullRequestCreatedCount = (chartDataset) => {
+    let job = { id: {}, job: {}, views: {} }
     job.id = '1'
     job.job = "Created"
     job.views = chartDataset.created
     setJobs([job])
   }
 
-  const setMerged =(chartDataset) => {
-    let job = { id:{}, job:{}, views:{} }
+  const setPullRequestMergedCount = (chartDataset) => {
+    let job = { id: {}, job: {}, views: {} }
     job.id = '2'
     job.job = "Merged"
     job.views = chartDataset.merged
@@ -176,7 +168,7 @@ function PullRequestsViews(prop) {
 
   return (
     <div>
-      <div className="">
+      <div>
         <ul className={classes.totalJobViewsGrid}>
           {jobs?.map(job => {
             return (

@@ -45,54 +45,52 @@ const useStyles = makeStyles(() => ({
 function CodeBaseViews(prop) {
   const classes = useStyles()
   const [jobs, setJobs] = useState([])
-  const [commitListData, setCommitListData] = useState([])
   const [currentProject, setCurrentProject] = useState({})
+  const [commitListData, setCommitListData] = useState([])
   const projectId = localStorage.getItem("projectId")
   const jwtToken = localStorage.getItem("jwtToken")
 
   useEffect(() => {
-    Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
-      { headers: { "Authorization": `${jwtToken}` } })
-      .then((response) => {
+    const fetchCurrentProject = async () => {
+      try {
+        const response = await Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
+          { headers: { "Authorization": `${jwtToken}` } })
         setCurrentProject(response.data)
-      })
-      .catch((e) => {
+      } catch (e) {
         alert(e.response?.status)
         console.error(e)
-      })
+      }
+    }
+    fetchCurrentProject()
   }, [])
 
-  const getCommitFromGitHub = () => {
+  const getCommitFromGitHub = async () => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     if (githubRepo !== undefined) {
       const query = githubRepo.url.split("github.com/")[1]
-      Axios.post(`http://localhost:9100/pvs-api/github/commits/${query}`, "",
-        { headers: { "Authorization": `${jwtToken}` } })
-        .then(() => {
-          getGitHubCommitFromDB()
-          // setLoading(false)
-        })
-        .catch((e) => {
-          alert(e.response?.status)
-          console.error(e)
-        })
+      try {
+        await Axios.post(`http://localhost:9100/pvs-api/github/commits/${query}`, "",
+          { headers: { "Authorization": `${jwtToken}` } })
+        getGitHubCommitFromDB()
+      } catch (e) {
+        alert(e.response?.status)
+        console.error(e)
+      }
     }
   }
 
-  const getGitHubCommitFromDB = () => {
+  const getGitHubCommitFromDB = async () => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     if (githubRepo !== undefined) {
       const query = githubRepo.url.split("github.com/")[1]
-      // todo need refactor with async
-      Axios.get(`http://localhost:9100/pvs-api/github/commits/${query}`,
-        { headers: { "Authorization": `${jwtToken}` } })
-        .then((response) => {
-          setCommitListData(response.data)
-        })
-        .catch((e) => {
-          alert(e.response?.status)
-          console.error(e)
-        })
+      try {
+        const response = await Axios.get(`http://localhost:9100/pvs-api/github/commits/${query}`,
+          { headers: { "Authorization": `${jwtToken}` } })
+        setCommitListData(response.data)
+      } catch (e) {
+        alert(e.response?.status)
+        console.error(e)
+      }
     }
   }
 
@@ -102,10 +100,16 @@ function CodeBaseViews(prop) {
     }
   }, [currentProject, prop.startMonth, prop.endMonth])
 
-  //Get additions and deletions
+  // Get commits' total additions and deletions
   useEffect(() => {
-    getAdditions()
-    getDeletions()
+    // Only triger the page rendering once
+    const calculateData = async () => {
+      await Promise.all([
+        getAdditions(),
+        getDeletions()
+      ])
+    }
+    calculateData()
   }, [commitListData, prop.startMonth, prop.endMonth])
 
   const getAdditions = () => {
@@ -120,7 +124,7 @@ function CodeBaseViews(prop) {
           return additionSum + currentCommit.additions;
         }, 0))
     }
-    
+
     setAdditions(chartDataset)
   }
 
@@ -136,20 +140,20 @@ function CodeBaseViews(prop) {
           return deletionSum + currentCommit.deletions;
         }, 0))
     }
-    
+
     setDeletions(chartDataset)
   }
 
   const setAdditions = (chartDataset) => {
-    let job = { id:{}, job:{}, views:{} }
+    let job = { id: {}, job: {}, views: {} }
     job.id = '1'
     job.job = "Additions"
     job.views = chartDataset.additions
     setJobs([job])
   }
 
-  const setDeletions =(chartDataset) => {
-    let job = { id:{}, job:{}, views:{} }
+  const setDeletions = (chartDataset) => {
+    let job = { id: {}, job: {}, views: {} }
     job.id = '2'
     job.job = "Deletions"
     job.views = chartDataset.deletions
@@ -158,7 +162,7 @@ function CodeBaseViews(prop) {
 
   return (
     <div>
-      <div className="">
+      <div>
         <ul className={classes.totalJobViewsGrid}>
           {jobs?.map(job => {
             return (

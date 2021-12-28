@@ -45,54 +45,52 @@ const useStyles = makeStyles(() => ({
 function CommitsViews(prop) {
   const classes = useStyles()
   const [jobs, setJobs] = useState([])
-  const [commitListData, setCommitListData] = useState([])
   const [currentProject, setCurrentProject] = useState({})
+  const [commitListData, setCommitListData] = useState([])
   const projectId = localStorage.getItem("projectId")
   const jwtToken = localStorage.getItem("jwtToken")
 
   useEffect(() => {
-    Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
-      { headers: { "Authorization": `${jwtToken}` } })
-      .then((response) => {
+    const fetchCurrentProject = async () => {
+      try {
+        const response = await Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
+          { headers: { "Authorization": `${jwtToken}` } })
         setCurrentProject(response.data)
-      })
-      .catch((e) => {
+      } catch (e) {
         alert(e.response?.status)
         console.error(e)
-      })
+      }
+    }
+    fetchCurrentProject()
   }, [])
 
-  const getCommitFromGitHub = () => {
+  const getCommitFromGitHub = async () => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     if (githubRepo !== undefined) {
       const query = githubRepo.url.split("github.com/")[1]
-      Axios.post(`http://localhost:9100/pvs-api/github/commits/${query}`, "",
-        { headers: { "Authorization": `${jwtToken}` } })
-        .then(() => {
-          getGitHubCommitFromDB()
-          // setLoading(false)
-        })
-        .catch((e) => {
-          alert(e.response?.status)
-          console.error(e)
-        })
+      try {
+        await Axios.post(`http://localhost:9100/pvs-api/github/commits/${query}`, "",
+          { headers: { "Authorization": `${jwtToken}` } })
+        getGitHubCommitFromDB()
+      } catch (e) {
+        alert(e.response?.status)
+        console.error(e)
+      }
     }
   }
 
-  const getGitHubCommitFromDB = () => {
+  const getGitHubCommitFromDB = async () => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     if (githubRepo !== undefined) {
       const query = githubRepo.url.split("github.com/")[1]
-      // todo need refactor with async
-      Axios.get(`http://localhost:9100/pvs-api/github/commits/${query}`,
-        { headers: { "Authorization": `${jwtToken}` } })
-        .then((response) => {
-          setCommitListData(response.data)
-        })
-        .catch((e) => {
-          alert(e.response?.status)
-          console.error(e)
-        })
+      try {
+        const response = await Axios.get(`http://localhost:9100/pvs-api/github/commits/${query}`,
+          { headers: { "Authorization": `${jwtToken}` } })
+        setCommitListData(response.data)
+      } catch (e) {
+        alert(e.response?.status)
+        console.error(e)
+      }
     }
   }
 
@@ -104,11 +102,17 @@ function CommitsViews(prop) {
 
   //Get commits total count & member count
   useEffect(() => {
-    calculateCommitTotalCount()
-    calculateMemberCount()
+    // Only triger the page rendering once
+    const calculateData = async () => {
+      await Promise.all([
+        getCommitTotalCount(),
+        getMemberCount()
+      ])
+    }
+    calculateData()
   }, [commitListData, prop.startMonth, prop.endMonth])
 
-  const calculateCommitTotalCount = () => {
+  const getCommitTotalCount = () => {
     const { startMonth, endMonth } = prop
 
     let chartDataset = { data: 0 }
@@ -116,31 +120,30 @@ function CommitsViews(prop) {
       chartDataset.data += (commitListData.filter(commit => {
         return moment(commit.committedDate).format("YYYY-MM") === month.format("YYYY-MM")
       }).length)
-      console.log(chartDataset.data)
     }
-    
+
     setCommitTotalCount(chartDataset)
   }
-  
-  const calculateMemberCount = () => {
+
+  const getMemberCount = () => {
     let chartDataset = { data: 0 }
     new Set(commitListData.map(commit => commit.authorName)).forEach(author => {
-      if (author) { chartDataset.data += 1}
+      if (author) chartDataset.data += 1
     })
-    
+
     setMemberCount(chartDataset)
   }
-  
+
   const setCommitTotalCount = (chartDataset) => {
-    let job = { id:{}, job:{}, views:{} }
+    let job = { id: {}, job: {}, views: {} }
     job.id = '1'
     job.job = "Commit TotalCount"
     job.views = chartDataset.data
     setJobs([job])
   }
 
-  const setMemberCount =(chartDataset) => {
-    let job = { id:{}, job:{}, views:{} }
+  const setMemberCount = (chartDataset) => {
+    let job = { id: {}, job: {}, views: {} }
     job.id = '2'
     job.job = "Member"
     job.views = chartDataset.data
@@ -149,7 +152,7 @@ function CommitsViews(prop) {
 
   return (
     <div>
-      <div className="">
+      <div>
         <ul className={classes.totalJobViewsGrid}>
           {jobs?.map(job => {
             return (

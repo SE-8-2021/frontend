@@ -11,32 +11,32 @@ import ProjectAvatar from './ProjectAvatar'
 import Axios from 'axios'
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-      display: 'flex',
-      '& > *': {
-        margin: theme.spacing(1),
-      },
-      minWidth: '30px',
-      alignItems: 'center',
-      width: "67%",
-      justifyContent: "space-between",
+  root: {
+    display: 'flex',
+    '& > *': {
+      margin: theme.spacing(1),
     },
-    DashBoard: {
-      maxWidth: '70rem',
-      margin: '1rem auto',
-    },
-    jobViews: {
-      fontSize: '3rem',
-      fontWeight: 600,
-    },
-    tileLayout: {
-      width: '100%',
-    },
-    backdrop: {
-      zIndex: theme.zIndex.drawer + 1,
-      color: '#fff',
-    },
-  }))
+    minWidth: '30px',
+    alignItems: 'center',
+    width: "67%",
+    justifyContent: "space-between",
+  },
+  DashBoard: {
+    maxWidth: '70rem',
+    margin: '1rem auto',
+  },
+  jobViews: {
+    fontSize: '3rem',
+    fontWeight: 600,
+  },
+  tileLayout: {
+    width: '100%',
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
+}))
 
 const initialPositions = [
   {
@@ -82,15 +82,17 @@ function DashBoardPage() {
   };
 
   useEffect(() => {
-    Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
-      {headers: {"Authorization": `${jwtToken}`}})
-      .then((response) => {
+    const fetchCurrentProject = async () => {
+      try {
+        const response = await Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
+          { headers: { "Authorization": `${jwtToken}` } })
         setCurrentProject(response.data)
-      })
-      .catch((e) => {
-        alert(e.response.status)
+      } catch (e) {
+        alert(e.response?.status)
         console.error(e)
-      })
+      }
+    }
+    fetchCurrentProject()
   }, [])
 
   useEffect(() => {
@@ -122,11 +124,11 @@ function DashBoardPage() {
       header: "Code Base",
       body: <CodeBaseViews />,
     },
- ];
+  ];
 
- const handleReposition = e => {
-   setPositions(e.value);
- };
+  const handleReposition = e => {
+    setPositions(e.value);
+  };
 
   return (
     <div style={{ marginLeft: "10px" }}>
