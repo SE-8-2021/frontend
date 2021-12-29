@@ -9,7 +9,8 @@ import {
   ExpandLess,
   ExpandMore,
   Code,
-  GpsFixed
+  GpsFixed,
+  Compare
 } from '@material-ui/icons'
 import {
   Drawer,
@@ -30,6 +31,7 @@ import { GoIssueOpened } from 'react-icons/go'
 import { HiDocumentDuplicate } from 'react-icons/hi'
 import { SiGithub, SiSonarqube, SiGitlab, SiTrello } from 'react-icons/si'
 import { RiDashboardFill } from 'react-icons/ri'
+import { BiGitPullRequest } from 'react-icons/bi'
 import { HiChartPie } from 'react-icons/hi'
 import clsx from 'clsx'
 import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers'
@@ -95,7 +97,6 @@ const useStyles = makeStyles((theme) => ({
     height: 'calc(100%)',
     width: 'auto'
   },
-
   logout: {
     position: 'absolute',
     right: 0
@@ -161,6 +162,7 @@ function Sidebar(prop) {
             <Divider />
 
             {/* dashboard UI button */}
+            <Divider className={classes.divider} />
             <ListItem button onClick={goToDashBoard}>
               <ListItemIcon>
                 <RiDashboardFill size={30} />
@@ -180,7 +182,9 @@ function Sidebar(prop) {
                   <List component="div" disablePadding className={classes.innerList}>
                     {buildSmallListItem("Commits", IoGitCommitSharp, goToCommit)}
                     {buildSmallListItem("Issues", GoIssueOpened, goToIssue)}
+                    {buildSmallListItem("Pull Request", BiGitPullRequest, goToPullRequest)}
                     {buildSmallListItem("Code Base", Code, goToCodeBase)}
+                    {buildSmallListItem("Comparison", Compare, goToComparison)}
                     {buildSmallListItem("Contribution", HiChartPie, goToContribution)}
                   </List>
                   <Divider />
@@ -200,6 +204,7 @@ function Sidebar(prop) {
                     {buildSmallListItem("Commits", IoGitCommitSharp, goToCommit)}
                     {buildSmallListItem("Issues", GoIssueOpened, goToIssue)}
                     {buildSmallListItem("Code Base", Code, goToCodeBase)}
+                    {buildSmallListItem("Comparison", Compare, goToComparison)}
                     {buildSmallListItem("Contribution", HiChartPie, goToContribution)}
                   </List>
                   <Divider />
@@ -268,8 +273,16 @@ function Sidebar(prop) {
     history.push("/issues")
   }
 
+  const goToPullRequest = () => {
+    history.push("/pull_requests")
+  }
+
   const goToCodeBase = () => {
     history.push("/codebase")
+  }
+
+  const goToComparison = () => {
+    history.push("/comparison")
   }
 
   const goToContribution = () => {
