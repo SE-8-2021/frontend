@@ -64,6 +64,7 @@ function IssueViews(prop) {
     fetchCurrentProject()
   }, [])
 
+  // Get issues(include pull requests) from GitHub
   const getIssueFromGitHub = async () => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     if (githubRepo !== undefined) {
@@ -123,10 +124,12 @@ function IssueViews(prop) {
 
     if (issueListSortedByClosedAt.length > 0) {
       const month = moment(endMonth)
+      let noCloseCount = 0
       const issueCountInSelectedRange = issueListSortedByClosedAt.findIndex(issue => {
+        if (issue.closedAt == null) noCloseCount += 1 
         return moment(issue.closedAt).year() > month.year() || moment(issue.closedAt).year() === month.year() && moment(issue.closedAt).month() > month.month()
       })
-      chartDataset.closed = (issueCountInSelectedRange === -1 ? issueListData.length : issueCountInSelectedRange)
+      chartDataset.closed = (issueCountInSelectedRange === -1 ? issueListData.length - noCloseCount : issueCountInSelectedRange - noCloseCount)
     }
 
     setIssueClosedMetric(chartDataset)
