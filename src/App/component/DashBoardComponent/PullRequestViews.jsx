@@ -71,7 +71,7 @@ function PullRequestsViews(prop) {
       try {
         const response = await Axios.get(`http://localhost:9100/pvs-api/github/pullRequests/${query}`,
           { headers: { "Authorization": `${jwtToken}` } })
-        setPullRequestListData(response.data)
+        setPullRequestListData(response.data === '' ? [] : response.data)
       } catch (e) {
         alert(e.response?.status);
         console.error(e)
