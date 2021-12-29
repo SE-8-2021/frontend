@@ -9,7 +9,8 @@ import {
   ExpandLess,
   ExpandMore,
   Code,
-  GpsFixed
+  GpsFixed,
+  Compare
 } from '@material-ui/icons'
 import {
   Drawer,
@@ -161,6 +162,7 @@ function Sidebar(prop) {
             <Divider />
 
             {/* dashboard UI button */}
+            <Divider className={classes.divider} />
             <ListItem button onClick={goToDashBoard}>
               <ListItemIcon>
                 <RiDashboardFill size={30} />
@@ -168,15 +170,6 @@ function Sidebar(prop) {
               <ListItemText primary="DashBoard" />
             </ListItem>
             <Divider />
-
-            {/* dashboard1 UI button
-            <ListItem button onClick={goToDashBoard1}>
-              <ListItemIcon>
-                <RiDashboardFill size={30} />
-              </ListItemIcon>
-              <ListItemText primary="DashBoard1" />
-            </ListItem>
-            <Divider /> */}
 
             {/* github metrics UI button */}
             {currentProject &&
@@ -190,6 +183,7 @@ function Sidebar(prop) {
                     {buildSmallListItem("Commits", IoGitCommitSharp, goToCommit)}
                     {buildSmallListItem("Issues", GoIssueOpened, goToIssue)}
                     {buildSmallListItem("Code Base", Code, goToCodeBase)}
+                    {buildSmallListItem("Comparison", Compare, goToComparison)}
                     {buildSmallListItem("Contribution", HiChartPie, goToContribution)}
                   </List>
                   <Divider />
@@ -209,6 +203,7 @@ function Sidebar(prop) {
                     {buildSmallListItem("Commits", IoGitCommitSharp, goToCommit)}
                     {buildSmallListItem("Issues", GoIssueOpened, goToIssue)}
                     {buildSmallListItem("Code Base", Code, goToCodeBase)}
+                    {buildSmallListItem("Comparison", Compare, goToComparison)}
                     {buildSmallListItem("Contribution", HiChartPie, goToContribution)}
                   </List>
                   <Divider />
@@ -269,10 +264,6 @@ function Sidebar(prop) {
     history.push("/dashboard")
   }
 
-  // const goToDashBoard1 = () => {
-  //   history.push("/dashboard1")
-  // }
-
   const goToCommit = () => {
     history.push("/commits")
   }
@@ -283,6 +274,10 @@ function Sidebar(prop) {
 
   const goToCodeBase = () => {
     history.push("/codebase")
+  }
+
+  const goToComparison = () => {
+    history.push("/comparison")
   }
 
   const goToContribution = () => {

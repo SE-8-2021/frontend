@@ -115,7 +115,7 @@ function CommitsViews(prop) {
   const getCommitTotalCount = () => {
     const { startMonth, endMonth } = prop
 
-    let chartDataset = { data: 0 }
+    const chartDataset = { data: 0 }
     for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
       chartDataset.data += (commitListData.filter(commit => {
         return moment(commit.committedDate).format("YYYY-MM") === month.format("YYYY-MM")
@@ -126,7 +126,7 @@ function CommitsViews(prop) {
   }
 
   const getMemberCount = () => {
-    let chartDataset = { data: 0 }
+    const chartDataset = { data: 0 }
     new Set(commitListData.map(commit => commit.authorName)).forEach(author => {
       if (author) chartDataset.data += 1
     })
@@ -135,7 +135,7 @@ function CommitsViews(prop) {
   }
 
   const setCommitTotalCount = (chartDataset) => {
-    let job = { id: {}, job: {}, views: {} }
+    const job = { id: {}, job: {}, views: {} }
     job.id = '1'
     job.job = "Commit TotalCount"
     job.views = chartDataset.data
@@ -143,7 +143,7 @@ function CommitsViews(prop) {
   }
 
   const setMemberCount = (chartDataset) => {
-    let job = { id: {}, job: {}, views: {} }
+    const job = { id: {}, job: {}, views: {} }
     job.id = '2'
     job.job = "Member"
     job.views = chartDataset.data

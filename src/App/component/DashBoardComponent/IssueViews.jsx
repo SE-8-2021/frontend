@@ -97,19 +97,20 @@ function IssueViews(prop) {
     calculateData()
   }, [issueListData, prop.startMonth, prop.endMonth])
 
+  // Sort data by the given key
+  const getIssueListSortedBy = (issueList, key) => issueList.sort((prev, curr) => prev[key] - curr[key])
+
   const getIssueCreatedCount = () => {
     const { endMonth } = prop
-    let chartDataset = { created: 0 }
-    let issueListDataSortedByCreatedAt = issueListData
+    const chartDataset = { created: 0 }
+    const issueListSortedByCreatedAt = getIssueListSortedBy(issueListData, 'createdAt')
 
-    issueListDataSortedByCreatedAt.sort((a, b) => a.createdAt - b.createdAt)
-    if (issueListDataSortedByCreatedAt.length > 0) {
-      let index
-      let month = moment(endMonth)
-      index = issueListDataSortedByCreatedAt.findIndex(issue => {
+    if (issueListSortedByCreatedAt.length > 0) {
+      const month = moment(endMonth)
+      const issueCountInSelectedRange = issueListSortedByCreatedAt.findIndex(issue => {
         return moment(issue.createdAt).year() > month.year() || moment(issue.createdAt).year() === month.year() && moment(issue.createdAt).month() > month.month()
       })
-      chartDataset.created = (index === -1 ? issueListData.length : index)
+      chartDataset.created = (issueCountInSelectedRange === -1 ? issueListData.length : issueCountInSelectedRange)
     }
 
     setIssueOpenedMetric(chartDataset)
@@ -117,24 +118,22 @@ function IssueViews(prop) {
 
   const getIssueClosedCount = () => {
     const { endMonth } = prop
-    let chartDataset = { closed: 0 }
-    let issueListDataSortedByClosedAt = issueListData
+    const chartDataset = { closed: 0 }
+    const issueListSortedByClosedAt = getIssueListSortedBy(issueListData, 'closedAt')
 
-    issueListDataSortedByClosedAt.sort((a, b) => a.closedAt - b.closedAt)
-    if (issueListDataSortedByClosedAt.length > 0) {
-      let index
-      let month = moment(endMonth)
-      index = issueListDataSortedByClosedAt.findIndex(issue => {
+    if (issueListSortedByClosedAt.length > 0) {
+      const month = moment(endMonth)
+      const issueCountInSelectedRange = issueListSortedByClosedAt.findIndex(issue => {
         return moment(issue.closedAt).year() > month.year() || moment(issue.closedAt).year() === month.year() && moment(issue.closedAt).month() > month.month()
       })
-      chartDataset.closed = (index === -1 ? issueListData.length : index)
+      chartDataset.closed = (issueCountInSelectedRange === -1 ? issueListData.length : issueCountInSelectedRange)
     }
 
     setIssueClosedMetric(chartDataset)
   }
 
   const setIssueOpenedMetric = (chartDataset) => {
-    let job = { id: {}, job: {}, views: {} }
+    const job = { id: {}, job: {}, views: {} }
     job.id = '1'
     job.job = "Created"
     job.views = chartDataset.created
@@ -142,7 +141,7 @@ function IssueViews(prop) {
   }
 
   const setIssueClosedMetric = (chartDataset) => {
-    let job = { id: {}, job: {}, views: {} }
+    const job = { id: {}, job: {}, views: {} }
     job.id = '2'
     job.job = "Closed"
     job.views = chartDataset.closed

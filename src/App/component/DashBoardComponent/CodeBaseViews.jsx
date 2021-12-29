@@ -115,7 +115,7 @@ function CodeBaseViews(prop) {
   const getAdditions = () => {
     const { startMonth, endMonth } = prop
 
-    let chartDataset = { additions: 0 }
+    const chartDataset = { additions: 0 }
     for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
       chartDataset.additions += (commitListData.filter(commit => {
         return moment(commit.committedDate).format("YYYY-MM") === month.format("YYYY-MM")
@@ -131,7 +131,7 @@ function CodeBaseViews(prop) {
   const getDeletions = () => {
     const { startMonth, endMonth } = prop
 
-    let chartDataset = { deletions: 0 }
+    const chartDataset = { deletions: 0 }
     for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
       chartDataset.deletions += (commitListData.filter(commit => {
         return moment(commit.committedDate).format("YYYY-MM") === month.format("YYYY-MM")
@@ -145,7 +145,7 @@ function CodeBaseViews(prop) {
   }
 
   const setAdditions = (chartDataset) => {
-    let job = { id: {}, job: {}, views: {} }
+    const job = { id: {}, job: {}, views: {} }
     job.id = '1'
     job.job = "Additions"
     job.views = chartDataset.additions
@@ -153,7 +153,7 @@ function CodeBaseViews(prop) {
   }
 
   const setDeletions = (chartDataset) => {
-    let job = { id: {}, job: {}, views: {} }
+    const job = { id: {}, job: {}, views: {} }
     job.id = '2'
     job.job = "Deletions"
     job.views = chartDataset.deletions

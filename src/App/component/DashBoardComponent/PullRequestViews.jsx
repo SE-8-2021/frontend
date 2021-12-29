@@ -97,25 +97,22 @@ function PullRequestsViews(prop) {
     calculateData()
   }, [pullRequestListData, prop.startMonth, prop.endMonth])
 
+  // Sort data by the given key
+  const getPRListSortedBy = (prList, key) => prList.sort((prev, curr) => prev[key] - curr[key])
+
   const getPullRequestCreatedCount = () => {
     const { endMonth } = prop
 
-    let chartDataset = { created: 0 }
-    let month = moment(endMonth)
-    let pullRequestListDataSortedByCreatedAt = pullRequestListData
-    let index
-
-    // Sort data by date
-    if (pullRequestListData !== undefined) {
-      [].slice.call(pullRequestListDataSortedByCreatedAt).sort((a, b) => a.createdAt - b.createdAt);
-    }
+    const month = moment(endMonth)
+    const prListSortedByCreatedAt = getPRListSortedBy(pullRequestListData, 'createdAt')
+    const chartDataset = { created: 0 }
 
     // Calculate the number of pull requests for the last month in the selected range
-    if (pullRequestListDataSortedByCreatedAt.length > 0) {
-      index = pullRequestListDataSortedByCreatedAt.findIndex(pullRequest => {
+    if (prListSortedByCreatedAt.length > 0) {
+      const prCountInSelectedRange = prListSortedByCreatedAt.findIndex(pullRequest => {
         return moment(pullRequest.createdAt).year() > month.year() || moment(pullRequest.createdAt).year() === month.year() && moment(pullRequest.createdAt).month() > month.month()
       })
-      chartDataset.created = (index === -1 ? pullRequestListData.length : index)
+      chartDataset.created = (prCountInSelectedRange === -1 ? pullRequestListData.length : prCountInSelectedRange)
     }
 
     setPullRequestCreatedCount(chartDataset)
@@ -124,34 +121,27 @@ function PullRequestsViews(prop) {
   const getPullRequestMergedCount = () => {
     const { endMonth } = prop
 
-    let chartDataset = { merged: 0 }
-    let month = moment(endMonth)
-    let pullRequestListDataSortedByMergedAt = pullRequestListData
-    let index
-    let noMergeCount = 0
-
-    // Sort data by date
-    if (pullRequestListData !== undefined) {
-      [].slice.call(pullRequestListDataSortedByMergedAt).sort((a, b) => a.mergedAt - b.mergedAt);
-    }
+    const month = moment(endMonth)
+    const prListSortedByMergedAt = getPRListSortedBy(pullRequestListData, 'mergedAt')
+    const chartDataset = { merged: 0 }
 
     // Calculate the number of pull requests for the last month in the selected range
-    if (pullRequestListDataSortedByMergedAt.length > 0) {
-      index = pullRequestListDataSortedByMergedAt.findIndex(pullRequest => {
-        console.log(moment(pullRequest.mergedAt).month())
+    if (prListSortedByMergedAt.length > 0) {
+      let noMergeCount = 0
+      const prCountInSelectedRange = prListSortedByMergedAt.findIndex(pullRequest => {
         if (pullRequest.mergedAt == null) {
           noMergeCount += 1
         }
         return moment(pullRequest.mergedAt).year() > month.year() || moment(pullRequest.mergedAt).year() === month.year() && moment(pullRequest.mergedAt).month() > month.month()
       })
-      chartDataset.merged = (index === -1 ? pullRequestListData.length - noMergeCount : index)
+      chartDataset.merged = (prCountInSelectedRange === -1 ? pullRequestListData.length - noMergeCount : prCountInSelectedRange - noMergeCount)
     }
 
     setPullRequestMergedCount(chartDataset)
   }
 
   const setPullRequestCreatedCount = (chartDataset) => {
-    let job = { id: {}, job: {}, views: {} }
+    const job = { id: {}, job: {}, views: {} }
     job.id = '1'
     job.job = "Created"
     job.views = chartDataset.created
@@ -159,7 +149,7 @@ function PullRequestsViews(prop) {
   }
 
   const setPullRequestMergedCount = (chartDataset) => {
-    let job = { id: {}, job: {}, views: {} }
+    const job = { id: {}, job: {}, views: {} }
     job.id = '2'
     job.job = "Merged"
     job.views = chartDataset.merged
