@@ -50,17 +50,18 @@ function CommitsViews(prop) {
   const projectId = localStorage.getItem("projectId")
   const jwtToken = localStorage.getItem("jwtToken")
 
-  useEffect(() => {
-    const fetchCurrentProject = async () => {
-      try {
-        const response = await Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
-          { headers: { "Authorization": `${jwtToken}` } })
-        setCurrentProject(response.data)
-      } catch (e) {
-        alert(e.response?.status)
-        console.error(e)
-      }
+  const fetchCurrentProject = async () => {
+    try {
+      const response = await Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
+        { headers: { "Authorization": `${jwtToken}` } })
+      setCurrentProject(response.data)
+    } catch (e) {
+      alert(e.response?.status)
+      console.error(e)
     }
+  }
+
+  useEffect(() => {
     fetchCurrentProject()
   }, [])
 
@@ -100,53 +101,54 @@ function CommitsViews(prop) {
     }
   }, [currentProject, prop.startMonth, prop.endMonth])
 
+  // Only triger the page rendering once
+  const calculateData = async () => {
+    await Promise.all([
+      setCommitTotalCount(),
+      setMemberCount()
+    ])
+  }
+
   //Get commits total count & member count
   useEffect(() => {
-    // Only triger the page rendering once
-    const calculateData = async () => {
-      await Promise.all([
-        getCommitTotalCount(),
-        getMemberCount()
-      ])
-    }
     calculateData()
   }, [commitListData, prop.startMonth, prop.endMonth])
 
   const getCommitTotalCount = () => {
     const { startMonth, endMonth } = prop
 
-    const chartDataset = { data: 0 }
+    let commitTotalCount = 0
     for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
-      chartDataset.data += (commitListData.filter(commit => {
+      commitTotalCount += (commitListData.filter(commit => {
         return moment(commit.committedDate).format("YYYY-MM") === month.format("YYYY-MM")
       }).length)
     }
 
-    setCommitTotalCount(chartDataset)
+    return commitTotalCount
   }
 
   const getMemberCount = () => {
-    const chartDataset = { data: 0 }
+    let memberCount = 0
     new Set(commitListData.map(commit => commit.authorName)).forEach(author => {
-      if (author) chartDataset.data += 1
+      if (author) memberCount += 1
     })
 
-    setMemberCount(chartDataset)
+    return memberCount
   }
 
-  const setCommitTotalCount = (chartDataset) => {
+  const setCommitTotalCount = () => {
     const job = { id: {}, job: {}, views: {} }
     job.id = '1'
     job.job = "Commit TotalCount"
-    job.views = chartDataset.data
+    job.views = getCommitTotalCount()
     setJobs([job])
   }
 
-  const setMemberCount = (chartDataset) => {
+  const setMemberCount = () => {
     const job = { id: {}, job: {}, views: {} }
     job.id = '2'
     job.job = "Member"
-    job.views = chartDataset.data
+    job.views = getMemberCount()
     setJobs(prevArray => [...prevArray, job])
   }
 

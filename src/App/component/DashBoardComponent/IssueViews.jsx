@@ -50,17 +50,18 @@ function IssueViews(prop) {
   const projectId = localStorage.getItem("projectId")
   const jwtToken = localStorage.getItem("jwtToken")
 
-  useEffect(() => {
-    const fetchCurrentProject = async () => {
-      try {
-        const response = await Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
-          { headers: { "Authorization": `${jwtToken}` } })
-        setCurrentProject(response.data)
-      } catch (e) {
-        alert(e.response?.status)
-        console.error(e)
-      }
+  const fetchCurrentProject = async () => {
+    try {
+      const response = await Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
+        { headers: { "Authorization": `${jwtToken}` } })
+      setCurrentProject(response.data)
+    } catch (e) {
+      alert(e.response?.status)
+      console.error(e)
     }
+  }
+
+  useEffect(() => {
     fetchCurrentProject()
   }, [])
 
@@ -86,15 +87,16 @@ function IssueViews(prop) {
     }
   }, [currentProject, prop.startMonth, prop.endMonth])
 
+  // Only triger the page rendering once
+  const calculateData = async () => {
+    await Promise.all([
+      setIssueCreatedCount(),
+      setIssueClosedCount()
+    ])
+  }
+
   // Get issue created count and closed count
   useEffect(() => {
-    // Only triger the page rendering once
-    const calculateData = async () => {
-      await Promise.all([
-        getIssueCreatedCount(),
-        getIssueClosedCount()
-      ])
-    }
     calculateData()
   }, [issueListData, prop.startMonth, prop.endMonth])
 
@@ -103,7 +105,7 @@ function IssueViews(prop) {
 
   const getIssueCreatedCount = () => {
     const { endMonth } = prop
-    const chartDataset = { created: 0 }
+    let created = 0
     const issueListSortedByCreatedAt = getIssueListSortedBy(issueListData, 'createdAt')
 
     if (issueListSortedByCreatedAt.length > 0) {
@@ -111,15 +113,15 @@ function IssueViews(prop) {
       const issueCountInSelectedRange = issueListSortedByCreatedAt.findIndex(issue => {
         return moment(issue.createdAt).year() > month.year() || moment(issue.createdAt).year() === month.year() && moment(issue.createdAt).month() > month.month()
       })
-      chartDataset.created = (issueCountInSelectedRange === -1 ? issueListData.length : issueCountInSelectedRange)
+      created = (issueCountInSelectedRange === -1 ? issueListData.length : issueCountInSelectedRange)
     }
 
-    setIssueOpenedMetric(chartDataset)
+    return created
   }
 
   const getIssueClosedCount = () => {
     const { endMonth } = prop
-    const chartDataset = { closed: 0 }
+    let closed = 0
     const issueListSortedByClosedAt = getIssueListSortedBy(issueListData, 'closedAt')
 
     if (issueListSortedByClosedAt.length > 0) {
@@ -129,25 +131,25 @@ function IssueViews(prop) {
         if (issue.closedAt == null) noCloseCount += 1 
         return moment(issue.closedAt).year() > month.year() || moment(issue.closedAt).year() === month.year() && moment(issue.closedAt).month() > month.month()
       })
-      chartDataset.closed = (issueCountInSelectedRange === -1 ? issueListData.length - noCloseCount : issueCountInSelectedRange - noCloseCount)
+      closed = (issueCountInSelectedRange === -1 ? issueListData.length - noCloseCount : issueCountInSelectedRange - noCloseCount)
     }
 
-    setIssueClosedMetric(chartDataset)
+    return closed
   }
 
-  const setIssueOpenedMetric = (chartDataset) => {
+  const setIssueCreatedCount = () => {
     const job = { id: {}, job: {}, views: {} }
     job.id = '1'
     job.job = "Created"
-    job.views = chartDataset.created
+    job.views = getIssueCreatedCount()
     setJobs([job])
   }
 
-  const setIssueClosedMetric = (chartDataset) => {
+  const setIssueClosedCount = () => {
     const job = { id: {}, job: {}, views: {} }
     job.id = '2'
     job.job = "Closed"
-    job.views = chartDataset.closed
+    job.views = getIssueClosedCount()
     setJobs(prevArray => [...prevArray, job])
   }
 

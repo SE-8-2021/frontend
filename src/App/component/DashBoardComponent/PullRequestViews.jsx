@@ -50,17 +50,18 @@ function PullRequestsViews(prop) {
   const projectId = localStorage.getItem("projectId")
   const jwtToken = localStorage.getItem("jwtToken")
 
-  useEffect(() => {
-    const fetchCurrentProject = async () => {
-      try {
-        const response = await Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
-          { headers: { "Authorization": `${jwtToken}` } })
-        setCurrentProject(response.data)
-      } catch (e) {
-        alert(e.response?.status)
-        console.error(e)
-      }
+  const fetchCurrentProject = async () => {
+    try {
+      const response = await Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
+        { headers: { "Authorization": `${jwtToken}` } })
+      setCurrentProject(response.data)
+    } catch (e) {
+      alert(e.response?.status)
+      console.error(e)
     }
+  }
+
+  useEffect(() => {
     fetchCurrentProject()
   }, [])
 
@@ -85,15 +86,16 @@ function PullRequestsViews(prop) {
     }
   }, [currentProject, prop.startMonth, prop.endMonth])
 
+  // Only triger the page rendering once
+  const calculateData = async () => {
+    await Promise.all([
+      setPullRequestCreatedCount(),
+      setPullRequestMergedCount()
+    ])
+  }
+
   //Get created count and merged count of pull requests
   useEffect(() => {
-    // Only triger the page rendering once
-    const calculateData = async () => {
-      await Promise.all([
-        getPullRequestCreatedCount(),
-        getPullRequestMergedCount()
-      ])
-    }
     calculateData()
   }, [pullRequestListData, prop.startMonth, prop.endMonth])
 
@@ -105,17 +107,17 @@ function PullRequestsViews(prop) {
 
     const month = moment(endMonth)
     const prListSortedByCreatedAt = getPRListSortedBy(pullRequestListData, 'createdAt')
-    const chartDataset = { created: 0 }
+    let created = 0
 
     // Calculate the number of pull requests for the last month in the selected range
     if (prListSortedByCreatedAt.length > 0) {
       const prCountInSelectedRange = prListSortedByCreatedAt.findIndex(pullRequest => {
         return moment(pullRequest.createdAt).year() > month.year() || moment(pullRequest.createdAt).year() === month.year() && moment(pullRequest.createdAt).month() > month.month()
       })
-      chartDataset.created = (prCountInSelectedRange === -1 ? pullRequestListData.length : prCountInSelectedRange)
+      created = (prCountInSelectedRange === -1 ? pullRequestListData.length : prCountInSelectedRange)
     }
 
-    setPullRequestCreatedCount(chartDataset)
+    return created
   }
 
   const getPullRequestMergedCount = () => {
@@ -123,7 +125,7 @@ function PullRequestsViews(prop) {
 
     const month = moment(endMonth)
     const prListSortedByMergedAt = getPRListSortedBy(pullRequestListData, 'mergedAt')
-    const chartDataset = { merged: 0 }
+    let merged = 0
 
     // Calculate the number of pull requests for the last month in the selected range
     if (prListSortedByMergedAt.length > 0) {
@@ -134,25 +136,25 @@ function PullRequestsViews(prop) {
         }
         return moment(pullRequest.mergedAt).year() > month.year() || moment(pullRequest.mergedAt).year() === month.year() && moment(pullRequest.mergedAt).month() > month.month()
       })
-      chartDataset.merged = (prCountInSelectedRange === -1 ? pullRequestListData.length - noMergeCount : prCountInSelectedRange - noMergeCount)
+      merged = (prCountInSelectedRange === -1 ? pullRequestListData.length - noMergeCount : prCountInSelectedRange - noMergeCount)
     }
 
-    setPullRequestMergedCount(chartDataset)
+    return merged
   }
 
-  const setPullRequestCreatedCount = (chartDataset) => {
+  const setPullRequestCreatedCount = () => {
     const job = { id: {}, job: {}, views: {} }
     job.id = '1'
     job.job = "Created"
-    job.views = chartDataset.created
+    job.views = getPullRequestCreatedCount()
     setJobs([job])
   }
 
-  const setPullRequestMergedCount = (chartDataset) => {
+  const setPullRequestMergedCount = () => {
     const job = { id: {}, job: {}, views: {} }
     job.id = '2'
     job.job = "Merged"
-    job.views = chartDataset.merged
+    job.views = getPullRequestMergedCount()
     setJobs(prevArray => [...prevArray, job])
   }
 

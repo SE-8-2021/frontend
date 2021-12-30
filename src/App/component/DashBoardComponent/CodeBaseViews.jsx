@@ -50,17 +50,18 @@ function CodeBaseViews(prop) {
   const projectId = localStorage.getItem("projectId")
   const jwtToken = localStorage.getItem("jwtToken")
 
-  useEffect(() => {
-    const fetchCurrentProject = async () => {
-      try {
-        const response = await Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
-          { headers: { "Authorization": `${jwtToken}` } })
-        setCurrentProject(response.data)
-      } catch (e) {
-        alert(e.response?.status)
-        console.error(e)
-      }
+  const fetchCurrentProject = async () => {
+    try {
+      const response = await Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
+        { headers: { "Authorization": `${jwtToken}` } })
+      setCurrentProject(response.data)
+    } catch (e) {
+      alert(e.response?.status)
+      console.error(e)
     }
+  }
+  
+  useEffect(() => {
     fetchCurrentProject()
   }, [])
 
@@ -100,24 +101,25 @@ function CodeBaseViews(prop) {
     }
   }, [currentProject, prop.startMonth, prop.endMonth])
 
+  // Only triger the page rendering once
+  const calculateData = async () => {
+    await Promise.all([
+      setAdditions(),
+      setDeletions()
+    ])
+  }
+
   // Get commits' total additions and deletions
   useEffect(() => {
-    // Only triger the page rendering once
-    const calculateData = async () => {
-      await Promise.all([
-        getAdditions(),
-        getDeletions()
-      ])
-    }
     calculateData()
   }, [commitListData, prop.startMonth, prop.endMonth])
 
   const getAdditions = () => {
     const { startMonth, endMonth } = prop
 
-    const chartDataset = { additions: 0 }
+    let additions = 0
     for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
-      chartDataset.additions += (commitListData.filter(commit => {
+      additions += (commitListData.filter(commit => {
         return moment(commit.committedDate).format("YYYY-MM") === month.format("YYYY-MM")
       })
         .reduce(function (additionSum, currentCommit) {
@@ -125,15 +127,15 @@ function CodeBaseViews(prop) {
         }, 0))
     }
 
-    setAdditions(chartDataset)
+    return additions
   }
 
   const getDeletions = () => {
     const { startMonth, endMonth } = prop
 
-    const chartDataset = { deletions: 0 }
+    let deletions = 0
     for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
-      chartDataset.deletions += (commitListData.filter(commit => {
+      deletions += (commitListData.filter(commit => {
         return moment(commit.committedDate).format("YYYY-MM") === month.format("YYYY-MM")
       })
         .reduce(function (deletionSum, currentCommit) {
@@ -141,22 +143,22 @@ function CodeBaseViews(prop) {
         }, 0))
     }
 
-    setDeletions(chartDataset)
+    return deletions
   }
 
-  const setAdditions = (chartDataset) => {
+  const setAdditions = () => {
     const job = { id: {}, job: {}, views: {} }
     job.id = '1'
     job.job = "Additions"
-    job.views = chartDataset.additions
+    job.views = getAdditions()
     setJobs([job])
   }
 
-  const setDeletions = (chartDataset) => {
+  const setDeletions = () => {
     const job = { id: {}, job: {}, views: {} }
     job.id = '2'
     job.job = "Deletions"
-    job.views = chartDataset.deletions
+    job.views = getDeletions()
     setJobs(prevArray => [...prevArray, job])
   }
 
