@@ -77,9 +77,9 @@ function DashBoardPage() {
   const handleClose = () => {
     setOpen(false);
   };
-  const handleToggle = () => {
-    setOpen(!open);
-  };
+  // const handleToggle = () => {
+  //   setOpen(!open);
+  // };
 
   const fetchCurrentProject = async () => {
     try {
@@ -101,11 +101,8 @@ function DashBoardPage() {
     if (githubRepo !== undefined) {
       setHasGitHubRepo(true)
     }
-  }, [currentProject])
-
-  useEffect(() => {
     handleClose()
-  })
+  }, [currentProject])
 
   const widgets = [
     {
