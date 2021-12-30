@@ -143,18 +143,12 @@ function PullRequestsViews(prop) {
   }
 
   const setPullRequestCreatedCount = () => {
-    const job = { id: {}, job: {}, views: {} }
-    job.id = '1'
-    job.job = "Created"
-    job.views = getPullRequestCreatedCount()
+    const job = { id: '1', job: "Created", views: getPullRequestCreatedCount() }
     setJobs([job])
   }
 
   const setPullRequestMergedCount = () => {
-    const job = { id: {}, job: {}, views: {} }
-    job.id = '2'
-    job.job = "Merged"
-    job.views = getPullRequestMergedCount()
+    const job = { id: '2', job: "Merged", views: getPullRequestMergedCount() }
     setJobs(prevArray => [...prevArray, job])
   }
 

@@ -137,18 +137,12 @@ function CommitsViews(prop) {
   }
 
   const setCommitTotalCount = () => {
-    const job = { id: {}, job: {}, views: {} }
-    job.id = '1'
-    job.job = "Commit TotalCount"
-    job.views = getCommitTotalCount()
+    const job = { id: '1', job: "Commit TotalCount", views: getCommitTotalCount() }
     setJobs([job])
   }
 
   const setMemberCount = () => {
-    const job = { id: {}, job: {}, views: {} }
-    job.id = '2'
-    job.job = "Member"
-    job.views = getMemberCount()
+    const job = { id: '2', job: "Member", views: getMemberCount() }
     setJobs(prevArray => [...prevArray, job])
   }
 
@@ -158,11 +152,11 @@ function CommitsViews(prop) {
         <ul className={classes.totalJobViewsGrid}>
           {jobs?.map(job => {
             return (
-              <li className={classes.jobViewsBlock} key={job?.id}>
-                <span className={classes.jobTitle}>{job?.job}</span>
+              <li className={classes.jobViewsBlock} key={job.id}>
+                <span className={classes.jobTitle}>{job.job}</span>
 
                 <div className={classes.jobViewsContainer}>
-                  <span className={classes.jobViews}>{job?.views}</span>
+                  <span className={classes.jobViews}>{job.views}</span>
                 </div>
               </li>
             );

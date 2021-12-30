@@ -104,8 +104,8 @@ function CodeBaseViews(prop) {
   // Only triger the page rendering once
   const calculateData = async () => {
     await Promise.all([
-      setAdditions(),
-      setDeletions()
+      setJobAdditions(),
+      setJobDeletions()
     ])
   }
 
@@ -146,19 +146,13 @@ function CodeBaseViews(prop) {
     return deletions
   }
 
-  const setAdditions = () => {
-    const job = { id: {}, job: {}, views: {} }
-    job.id = '1'
-    job.job = "Additions"
-    job.views = getAdditions()
+  const setJobAdditions = () => {
+    const job = { id: '1', job: "Additions", views: getAdditions() }
     setJobs([job])
   }
 
-  const setDeletions = () => {
-    const job = { id: {}, job: {}, views: {} }
-    job.id = '2'
-    job.job = "Deletions"
-    job.views = getDeletions()
+  const setJobDeletions = () => {
+    const job = { id: '2', job: "Deletions", views: getDeletions() }
     setJobs(prevArray => [...prevArray, job])
   }
 
@@ -168,11 +162,11 @@ function CodeBaseViews(prop) {
         <ul className={classes.totalJobViewsGrid}>
           {jobs?.map(job => {
             return (
-              <li className={classes.jobViewsBlock} key={job?.id}>
-                <span className={classes.jobTitle}>{job?.job}</span>
+              <li className={classes.jobViewsBlock} key={job.id}>
+                <span className={classes.jobTitle}>{job.job}</span>
 
                 <div className={classes.jobViewsContainer}>
-                  <span className={classes.jobViews}>{job?.views}</span>
+                  <span className={classes.jobViews}>{job.views}</span>
                 </div>
               </li>
             );

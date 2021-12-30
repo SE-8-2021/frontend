@@ -138,18 +138,12 @@ function IssueViews(prop) {
   }
 
   const setIssueCreatedCount = () => {
-    const job = { id: {}, job: {}, views: {} }
-    job.id = '1'
-    job.job = "Created"
-    job.views = getIssueCreatedCount()
+    const job = { id: '1', job: "Created", views: getIssueCreatedCount() }
     setJobs([job])
   }
 
   const setIssueClosedCount = () => {
-    const job = { id: {}, job: {}, views: {} }
-    job.id = '2'
-    job.job = "Closed"
-    job.views = getIssueClosedCount()
+    const job = { id: '2', job: "Closed", views: getIssueClosedCount() }
     setJobs(prevArray => [...prevArray, job])
   }
 
@@ -159,11 +153,11 @@ function IssueViews(prop) {
         <ul className={classes.totalJobViewsGrid}>
           {jobs?.map(job => {
             return (
-              <li className={classes.jobViewsBlock} key={job?.id}>
-                <span className={classes.jobTitle}>{job?.job}</span>
+              <li className={classes.jobViewsBlock} key={job.id}>
+                <span className={classes.jobTitle}>{job.job}</span>
 
                 <div className={classes.jobViewsContainer}>
-                  <span className={classes.jobViews}>{job?.views}</span>
+                  <span className={classes.jobViews}>{job.views}</span>
                 </div>
               </li>
             );

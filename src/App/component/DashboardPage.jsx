@@ -81,17 +81,18 @@ function DashBoardPage() {
     setOpen(!open);
   };
 
-  useEffect(() => {
-    const fetchCurrentProject = async () => {
-      try {
-        const response = await Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
-          { headers: { "Authorization": `${jwtToken}` } })
-        setCurrentProject(response.data)
-      } catch (e) {
-        alert(e.response?.status)
-        console.error(e)
-      }
+  const fetchCurrentProject = async () => {
+    try {
+      const response = await Axios.get(`http://localhost:9100/pvs-api/project/1/${projectId}`,
+        { headers: { "Authorization": `${jwtToken}` } })
+      setCurrentProject(response.data)
+    } catch (e) {
+      alert(e.response?.status)
+      console.error(e)
     }
+  }
+
+  useEffect(() => {
     fetchCurrentProject()
   }, [])
 
@@ -103,7 +104,6 @@ function DashBoardPage() {
   }, [currentProject])
 
   useEffect(() => {
-    handleToggle()
     handleClose()
   })
 
