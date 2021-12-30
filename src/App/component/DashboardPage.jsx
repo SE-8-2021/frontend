@@ -1,13 +1,12 @@
 import "@progress/kendo-theme-material/dist/all.css";
 import { TileLayout } from "@progress/kendo-react-layout";
-import { useState, useEffect } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import { Backdrop, CircularProgress } from '@material-ui/core'
 import CommitsViews from "./DashBoardComponent/CommitsViews"
 import IssueViews from "./DashBoardComponent/IssueViews"
 import PullRequestsViews from "./DashBoardComponent/PullRequestViews"
 import CodeBaseViews from "./DashBoardComponent/CodeBaseViews"
-import {lazy, Suspense, useEffect, useMemo, useState} from 'react'
 import ProjectAvatar from './ProjectAvatar'
 import Axios from 'axios'
 
@@ -23,17 +22,16 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(1),
     },
     minWidth: '30px',
-    alignItems: 'center',
     width: 'auto',
-    height: '100vh',
     justifyContent: "space-between",
   },
   title: {
     display: 'inline-block',
     marginLeft: '15px',
     marginRight: '15px'
+  },
   DashBoard: {
-    maxWidth: '70rem',
+    width: 'calc(100vw - 304px)',
     margin: '1rem auto',
   },
   jobViews: {
@@ -91,9 +89,9 @@ function DashBoardPage() {
   const handleClose = () => {
     setOpen(false);
   };
-  // const handleToggle = () => {
-  //   setOpen(!open);
-  // };
+  const handleToggle = () => {
+    setOpen(!open);
+  };
 
   const fetchCurrentProject = async () => {
     try {
@@ -116,6 +114,7 @@ function DashBoardPage() {
   }, [])
 
   useEffect(() => {
+    handleToggle()
     const githubRepo = currentProject.repositoryDTOList?.find(repo => repo.type === 'github')
     if (githubRepo !== undefined) {
       setHasGitHubRepo(true)
@@ -123,7 +122,7 @@ function DashBoardPage() {
     handleClose()
   }, [currentProject])
 
-  const widgets = [
+  const githubMetrics = [
     {
       header: "Commits",
       body: <CommitsViews />,
@@ -147,11 +146,11 @@ function DashBoardPage() {
   };
 
   return (
-    <div style={{ marginLeft: "10px" }}>
+    <div className={classes.root}>
       <Backdrop className={classes.backdrop} open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      <div className={classes.root}>
+        <div>
         <header className={classes.header}>
           <ProjectAvatar
             size="small"
@@ -160,27 +159,28 @@ function DashBoardPage() {
           />
           <h2 className={classes.title}>{currentProject ? currentProject.projectName : ""}</h2>
         </header>
-      </div>
 
-      {hasGitHubRepo &&
-        <div className={classes.DashBoard}>
-          <TileLayout
-            className={classes.tileLayout}
-            columns={4}
-            rowHeight={255}
-            gap={{ rows: 10, columns: 10 }}
-            positions={positions}
-            items={widgets}
-            onReposition={handleReposition}
-          />
-        </div>
-      
-      {
-        sonarId &&
-        <Suspense fallback={<div>Loading Sonar Metrics...</div>}>
-          <SonarMetrics sonarComponentName={sonarId}/>
-        </Suspense>
-      }
+        {
+          hasGitHubRepo &&
+          <div className={classes.DashBoard}>
+            <TileLayout
+              className={classes.tileLayout}
+              columns={4}
+              rowHeight={255}
+              gap={{ rows: 10, columns: 10 }}
+              positions={positions}
+              items={githubMetrics}
+              onReposition={handleReposition}
+              />
+          </div>
+        }
+        {
+          sonarId &&
+          <Suspense fallback={<div>Loading Sonar Metrics...</div>}>
+            <SonarMetrics sonarComponentName={sonarId}/>
+          </Suspense>
+        }
+      </div>
     </div>
   )
 }
