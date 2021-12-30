@@ -60,10 +60,6 @@ function CodeBaseViews(prop) {
       console.error(e)
     }
   }
-  
-  useEffect(() => {
-    fetchCurrentProject()
-  }, [])
 
   const getCommitFromGitHub = async () => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
@@ -96,6 +92,7 @@ function CodeBaseViews(prop) {
   }
 
   useEffect(() => {
+    fetchCurrentProject()
     if (Object.keys(currentProject).length !== 0) {
       getCommitFromGitHub()
     }

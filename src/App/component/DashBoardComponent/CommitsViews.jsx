@@ -61,10 +61,6 @@ function CommitsViews(prop) {
     }
   }
 
-  useEffect(() => {
-    fetchCurrentProject()
-  }, [])
-
   const getCommitFromGitHub = async () => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     if (githubRepo !== undefined) {
@@ -96,6 +92,7 @@ function CommitsViews(prop) {
   }
 
   useEffect(() => {
+    fetchCurrentProject()
     if (Object.keys(currentProject).length !== 0) {
       getCommitFromGitHub()
     }

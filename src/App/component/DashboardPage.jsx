@@ -14,16 +14,11 @@ const SonarMetrics = lazy(() => import('./SonarMetrics'))
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    alignContent: 'flex-start',
-    flexWrap: 'wrap',
     '& > *': {
       margin: theme.spacing(1),
     },
     minWidth: '30px',
     width: 'auto',
-    justifyContent: "space-between",
   },
   title: {
     display: 'inline-block',
@@ -108,13 +103,10 @@ function DashBoardPage() {
     const dto = currentProject?.repositoryDTOList?.find(dto => dto.type === 'sonar')
     return dto?.url && (new URL(dto.url)).searchParams.get('id')
   }, [currentProject])
-
-  useEffect(() => {
-    fetchCurrentProject()
-  }, [])
-
+  
   useEffect(() => {
     handleToggle()
+    fetchCurrentProject()
     const githubRepo = currentProject.repositoryDTOList?.find(repo => repo.type === 'github')
     if (githubRepo !== undefined) {
       setHasGitHubRepo(true)

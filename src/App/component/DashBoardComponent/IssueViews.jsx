@@ -61,10 +61,6 @@ function IssueViews(prop) {
     }
   }
 
-  useEffect(() => {
-    fetchCurrentProject()
-  }, [])
-
   // Get issues(include pull requests) from GitHub
   const getIssueFromGitHub = async () => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
@@ -82,6 +78,7 @@ function IssueViews(prop) {
   }
 
   useEffect(() => {
+    fetchCurrentProject()
     if (Object.keys(currentProject).length !== 0) {
       getIssueFromGitHub()
     }

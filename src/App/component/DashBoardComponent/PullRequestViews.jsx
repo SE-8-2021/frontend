@@ -61,10 +61,6 @@ function PullRequestsViews(prop) {
     }
   }
 
-  useEffect(() => {
-    fetchCurrentProject()
-  }, [])
-
   const getPullRequestsFromGitHub = async () => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     if (githubRepo !== undefined) {
@@ -81,6 +77,7 @@ function PullRequestsViews(prop) {
   }
 
   useEffect(() => {
+    fetchCurrentProject()
     if (Object.keys(currentProject).length !== 0) {
       getPullRequestsFromGitHub()
     }
