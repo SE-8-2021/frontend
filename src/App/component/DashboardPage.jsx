@@ -7,20 +7,31 @@ import CommitsViews from "./DashBoardComponent/CommitsViews"
 import IssueViews from "./DashBoardComponent/IssueViews"
 import PullRequestsViews from "./DashBoardComponent/PullRequestViews"
 import CodeBaseViews from "./DashBoardComponent/CodeBaseViews"
+import {lazy, Suspense, useEffect, useMemo, useState} from 'react'
 import ProjectAvatar from './ProjectAvatar'
 import Axios from 'axios'
+
+const SonarMetrics = lazy(() => import('./SonarMetrics'))
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
+    alignItems: 'flex-start',
+    alignContent: 'flex-start',
+    flexWrap: 'wrap',
     '& > *': {
       margin: theme.spacing(1),
     },
     minWidth: '30px',
     alignItems: 'center',
-    width: "67%",
+    width: 'auto',
+    height: '100vh',
     justifyContent: "space-between",
   },
+  title: {
+    display: 'inline-block',
+    marginLeft: '15px',
+    marginRight: '15px'
   DashBoard: {
     maxWidth: '70rem',
     margin: '1rem auto',
@@ -32,9 +43,12 @@ const useStyles = makeStyles((theme) => ({
   tileLayout: {
     width: '100%',
   },
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: '#fff',
+  avatar: {
+    display: 'inline-block'
+  },
+  header: {
+    display: 'flex',
+    width: '100%'
   },
 }))
 
@@ -92,6 +106,11 @@ function DashBoardPage() {
     }
   }
 
+  const sonarId = useMemo(() => {
+    const dto = currentProject?.repositoryDTOList?.find(dto => dto.type === 'sonar')
+    return dto?.url && (new URL(dto.url)).searchParams.get('id')
+  }, [currentProject])
+
   useEffect(() => {
     fetchCurrentProject()
   }, [])
@@ -133,17 +152,14 @@ function DashBoardPage() {
         <CircularProgress color="inherit" />
       </Backdrop>
       <div className={classes.root}>
-        <span style={{ display: "flex", alignItems: "center" }}>
-          {/* Project Avatar*/}
+        <header className={classes.header}>
           <ProjectAvatar
             size="small"
             project={currentProject}
+            className={classes.avatar}
           />
-          {/* Project Name */}
-          <p style={{ margin: "0 1em" }}>
-            <h2>{currentProject ? currentProject.projectName : ""}</h2>
-          </p>
-        </span>
+          <h2 className={classes.title}>{currentProject ? currentProject.projectName : ""}</h2>
+        </header>
       </div>
 
       {hasGitHubRepo &&
@@ -158,6 +174,12 @@ function DashBoardPage() {
             onReposition={handleReposition}
           />
         </div>
+      
+      {
+        sonarId &&
+        <Suspense fallback={<div>Loading Sonar Metrics...</div>}>
+          <SonarMetrics sonarComponentName={sonarId}/>
+        </Suspense>
       }
     </div>
   )

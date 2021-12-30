@@ -112,7 +112,7 @@ function ProjectAvatar(props) {
   }
 
   return (
-    <div>
+    <span>
       <Box className={props.size === 'large' ? classes.large : classes.small}>
       {props.size === 'large' &&
       <Button onClick={toggleDeletionAlertDialog}>X</Button>
@@ -174,7 +174,7 @@ function ProjectAvatar(props) {
           <IconButton aria-label="Add Repository" onClick={showAddRepoDialog}>
             <AddIcon/>
           </IconButton>
-          
+
         </CardActions>
         }
       </Box>
@@ -183,8 +183,9 @@ function ProjectAvatar(props) {
         reloadProjects={props.reloadProjects}
         handleClose={() => setAddRepoDialogOpen(false)}
         projectId={props.project.projectId}
+        hasGitRepo={hasGithubRepo || hasGitlabRepo}
       />
-    </div>
+    </span>
   )
 }
 
