@@ -98,7 +98,6 @@ function CommitsViews(prop) {
   useEffect(() => {
     if (Object.keys(currentProject).length !== 0) {
       getCommitFromGitHub()
-      console.log('get commit done', commitListData)
     }
   }, [currentProject, prop.startMonth, prop.endMonth])
 
@@ -113,7 +112,6 @@ function CommitsViews(prop) {
   //Get commits total count & member count
   useEffect(() => {
     calculateData()
-    console.log('calculate done')
   }, [commitListData, prop.startMonth, prop.endMonth])
 
   const getCommitTotalCount = () => {
