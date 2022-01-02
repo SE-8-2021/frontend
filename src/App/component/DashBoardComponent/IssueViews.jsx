@@ -79,6 +79,9 @@ function IssueViews(prop) {
 
   useEffect(() => {
     fetchCurrentProject()
+  }, [])
+
+  useEffect(() => {
     if (Object.keys(currentProject).length !== 0) {
       getIssueFromGitHub()
     }

@@ -78,8 +78,13 @@ function PullRequestsViews(prop) {
 
   useEffect(() => {
     fetchCurrentProject()
+    console.log('get PR project done')
+  }, [])
+
+  useEffect(() => {
     if (Object.keys(currentProject).length !== 0) {
       getPullRequestsFromGitHub()
+      console.log('get PR done')
     }
   }, [currentProject, prop.startMonth, prop.endMonth])
 
@@ -94,6 +99,7 @@ function PullRequestsViews(prop) {
   //Get created count and merged count of pull requests
   useEffect(() => {
     calculateData()
+    console.log('calculate PR done')
   }, [pullRequestListData, prop.startMonth, prop.endMonth])
 
   // Sort data by the given key

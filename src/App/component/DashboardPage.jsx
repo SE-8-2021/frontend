@@ -103,10 +103,13 @@ function DashBoardPage() {
     const dto = currentProject?.repositoryDTOList?.find(dto => dto.type === 'sonar')
     return dto?.url && (new URL(dto.url)).searchParams.get('id')
   }, [currentProject])
+
+  useEffect(() => {
+    fetchCurrentProject()
+  }, [])
   
   useEffect(() => {
     handleToggle()
-    fetchCurrentProject()
     const githubRepo = currentProject.repositoryDTOList?.find(repo => repo.type === 'github')
     if (githubRepo !== undefined) {
       setHasGitHubRepo(true)
