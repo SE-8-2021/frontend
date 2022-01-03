@@ -72,7 +72,7 @@ const initialPositions = [
   }
 ];
 
-function DashBoardPage() {
+function DashboardPage() {
   const classes = useStyles()
   const [positions, setPositions] = useState(initialPositions)
   const [currentProject, setCurrentProject] = useState({})
@@ -145,7 +145,7 @@ function DashBoardPage() {
       <Backdrop className={classes.backdrop} open={open}>
         <CircularProgress color="inherit" />
       </Backdrop>
-        <div>
+      <div>
         <header className={classes.header}>
           <ProjectAvatar
             size="small"
@@ -180,4 +180,4 @@ function DashBoardPage() {
   )
 }
 
-export default DashBoardPage;
+export default DashboardPage;

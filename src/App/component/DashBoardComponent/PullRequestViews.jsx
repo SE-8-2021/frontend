@@ -154,21 +154,19 @@ function PullRequestsViews(prop) {
 
   return (
     <div>
-      <div>
-        <ul className={classes.totalJobViewsGrid}>
-          {jobs?.map(job => {
-            return (
-              <li className={classes.jobViewsBlock} key={job?.id}>
-                <span className={classes.jobTitle}>{job?.job}</span>
+      <ul className={classes.totalJobViewsGrid}>
+        {jobs?.map(job => {
+          return (
+            <li className={classes.jobViewsBlock} key={job?.id}>
+              <span className={classes.jobTitle}>{job?.job}</span>
 
-                <div className={classes.jobViewsContainer}>
-                  <span className={classes.jobViews}>{job?.views}</span>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+              <div className={classes.jobViewsContainer}>
+                <span className={classes.jobViews}>{job?.views}</span>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   )
 }

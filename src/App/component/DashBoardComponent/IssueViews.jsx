@@ -128,7 +128,7 @@ function IssueViews(prop) {
       const month = moment(endMonth)
       let noCloseCount = 0
       const issueCountInSelectedRange = issueListSortedByClosedAt.findIndex(issue => {
-        if (issue.closedAt == null) noCloseCount += 1 
+        if (issue.closedAt == null) noCloseCount += 1
         return moment(issue.closedAt).year() > month.year() || moment(issue.closedAt).year() === month.year() && moment(issue.closedAt).month() > month.month()
       })
       closed = (issueCountInSelectedRange === -1 ? issueListData.length - noCloseCount : issueCountInSelectedRange - noCloseCount)
@@ -149,21 +149,19 @@ function IssueViews(prop) {
 
   return (
     <div>
-      <div>
-        <ul className={classes.totalJobViewsGrid}>
-          {jobs?.map(job => {
-            return (
-              <li className={classes.jobViewsBlock} key={job.id}>
-                <span className={classes.jobTitle}>{job.job}</span>
+      <ul className={classes.totalJobViewsGrid}>
+        {jobs?.map(job => {
+          return (
+            <li className={classes.jobViewsBlock} key={job.id}>
+              <span className={classes.jobTitle}>{job.job}</span>
 
-                <div className={classes.jobViewsContainer}>
-                  <span className={classes.jobViews}>{job.views}</span>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+              <div className={classes.jobViewsContainer}>
+                <span className={classes.jobViews}>{job.views}</span>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   )
 }
