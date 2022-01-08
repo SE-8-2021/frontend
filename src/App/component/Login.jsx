@@ -21,7 +21,7 @@ export default function Login() {
       zIndex: theme.zIndex.drawer + 1,
       color: '#fff',
     },
-    invalidAccount: {
+    accountOperationHint: {
       fontSize: '12px',
       color: '#FF0000',
     },
@@ -32,7 +32,7 @@ export default function Login() {
   const history = useHistory()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const [invalidAccount, setInvalidAccount] = useState(false)
+  const [accountOperationHint, setAccountOperationHint] = useState("")
 
   const login = async () => {
     if (username === "" || password === "") {
@@ -49,7 +49,25 @@ export default function Login() {
         localStorage.setItem("memberId", memberId)
         goToSelect()
       } else {
-        setInvalidAccount(true)
+        setAccountOperationHint("InvalidAccount")
+      }
+    }
+  }
+
+  const register = async () => {
+    if (username === "" || password === "") {
+      alert("不準啦馬的>///<")
+    } else {
+      let payload = {
+        username: username,
+        password: password
+      }
+      try {
+        const response = await Axios.post(`http://localhost:9100/pvs-api/auth/register`, payload)
+        response.data ? setAccountOperationHint("registerSuccess") : setAccountOperationHint("registerFailed")
+      } catch (e) {
+        alert(e.response?.status)
+        console.error(e)
       }
     }
   }
@@ -86,15 +104,21 @@ export default function Login() {
     <div className={classes.root}>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo"/>
-        { invalidAccount &&
-          <p className={classes.invalidAccount}>Invalid username or password</p>
+        { accountOperationHint === "InvalidAccount" &&
+          <p className={classes.accountOperationHint}>Invalid username or password</p>
+        }
+        { accountOperationHint === "registerSuccess" &&
+          <p className={classes.accountOperationHint}>Account register successfully</p>
+        }
+        { accountOperationHint === "registerFailed" &&
+          <p className={classes.accountOperationHint}>Account already exist</p>
         }
         <TextField
           id="username"
           label="Username"
           type="text"
           variant="outlined"
-          background
+          background="true"
           onChange={(e) => {
             setUsername(e.target.value)
           }}
@@ -105,16 +129,22 @@ export default function Login() {
           label="Password"
           type="password"
           variant="outlined"
-          background
+          background="true"
           onChange={(e) => {
             setPassword(e.target.value)
           }}
         />
         <br/>
-        {/* <button onClick={login} >Login</button> */}
-        <Button variant="contained" onClick={login} color="primary">
-          Login
-        </Button>
+        <span>
+          {/* <button onClick={login} >Login</button> */}
+          <Button variant="contained" onClick={register} color="primary">
+            Register
+          </Button>
+          {' '}
+          <Button variant="contained" onClick={login} color="primary">
+            Login
+          </Button>
+        </span>
       </header>
     </div>
   )
