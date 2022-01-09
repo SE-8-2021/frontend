@@ -6,7 +6,9 @@ import {useHistory} from 'react-router-dom'
 import './Login.css'
 import {
   TextField,
-  Button
+  Button,
+  Backdrop,
+  CircularProgress
 } from '@material-ui/core'
 
 export default function Login() {
@@ -33,6 +35,13 @@ export default function Login() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [accountOperationHint, setAccountOperationHint] = useState("")
+  const [open, setOpen] = useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleToggle = () => {
+    setOpen(!open);
+  };
 
   const login = async () => {
     if (username === "" || password === "") {
@@ -42,19 +51,23 @@ export default function Login() {
         username: username,
         password: password
       }
+      handleToggle()
       const jwt = await getJWTFrom(payload)
       const memberId = await getMemberId()
       if (jwt !== "" && memberId !== "") {
         localStorage.setItem("jwtToken", jwt)
         localStorage.setItem("memberId", memberId)
+        handleClose()
         goToSelect()
       } else {
         setAccountOperationHint("InvalidAccount")
+        handleClose()
       }
     }
   }
 
   const register = async () => {
+    handleToggle()
     const passwordRegex = new RegExp("^(?=.*?[0-9])(?=.*?[A-Za-z])(?=.*?[`!@#$%^&*()_+-=[\\]{};'\":\\|,.<>/?~]).{8,}$")
     if (username === "" || password === "") {
       alert("不準啦馬的>///<")
@@ -73,6 +86,7 @@ export default function Login() {
         console.error(e)
       }
     }
+    handleClose()
   }
 
   const getJWTFrom = async (credential) => {
@@ -105,6 +119,9 @@ export default function Login() {
 
   return (
     <div className={classes.root}>
+      <Backdrop className={classes.backdrop} open={open}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo"/>
         { accountOperationHint === "InvalidAccount" &&
