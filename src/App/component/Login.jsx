@@ -55,8 +55,11 @@ export default function Login() {
   }
 
   const register = async () => {
+    const passwordRegex = new RegExp("^(?=.*?[0-9])(?=.*?[A-Za-z])(?=.*?[`!@#$%^&*()_+-=[\\]{};'\":\\|,.<>/?~]).{8,}$")
     if (username === "" || password === "") {
       alert("不準啦馬的>///<")
+    } else if (!passwordRegex.test(password)) {
+      alert("Password should contains: \n 1. More than 8 digits\n 2. At least one uppercase and lowercase character\n 3. At least one number\n 4. At least one symbol")
     } else {
       let payload = {
         username: username,
