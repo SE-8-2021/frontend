@@ -4,21 +4,9 @@ import routes from './Routes'
 import {randomHash} from "../utils";
 import axios from "axios";
 
-const isValidToken = async (token) => {
-  if (!token) return false
-  try {
-    const {status} = await axios.post('http://localhost:9100/pvs-api/auth/verifyJwt', null, {
-      headers: {Authorization: token}
-    })
-    return status === 200
-  } catch (e) {
-    return false
-  }
-}
-
 function ProtectedRoute({component: Component, ...rest}) {
   const jwtToken = localStorage.getItem("jwtToken")
-  if (!jwtToken || !isValidToken(jwtToken)) {
+  if (!jwtToken) {
     return <Redirect to="/login"/>
   }
   return (
