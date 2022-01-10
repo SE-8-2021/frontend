@@ -27,6 +27,9 @@ export default function Login() {
       fontSize: '12px',
       color: '#FF0000',
     },
+    registerButton: {
+      marginRight: '7px',
+    },
   }));
 
 
@@ -36,10 +39,10 @@ export default function Login() {
   const [password, setPassword] = useState("")
   const [accountOperationHint, setAccountOperationHint] = useState("")
   const [isWhaOpen, setWhatOpen] = useState(false);
-  const handleWhatClose = () => {
+  const accountCheckingEnd = () => {
     setWhatOpen(false);
   };
-  const handleWhatToggle = () => {
+  const accountCheckingStart = () => {
     setWhatOpen(!isWhaOpen);
   };
 
@@ -51,23 +54,23 @@ export default function Login() {
         username: username,
         password: password
       }
-      handleWhatToggle()
+      accountCheckingStart()
       const jwt = await getJWTFrom(payload)
       const memberId = await getMemberId()
       if (jwt !== "" && memberId !== "") {
         localStorage.setItem("jwtToken", jwt)
         localStorage.setItem("memberId", memberId)
-        handleWhatClose()
+        accountCheckingEnd()
         goToSelect()
       } else {
         setAccountOperationHint("InvalidAccount")
-        handleWhatClose()
+        accountCheckingEnd()
       }
     }
   }
 
   const register = async () => {
-    handleWhatToggle()
+    accountCheckingStart()
     const passwordRegex = new RegExp("^(?=.*?[0-9])(?=.*?[A-Za-z])(?=.*?[`!@#$%^&*()_+-=[\\]{};'\":\\|,.<>/?~]).{8,}$")
     if (username === "" || password === "") {
       alert("不準啦馬的>///<")
@@ -86,7 +89,7 @@ export default function Login() {
         console.error(e)
       }
     }
-    handleWhatClose()
+    accountCheckingEnd()
   }
 
   const getJWTFrom = async (credential) => {
@@ -128,10 +131,10 @@ export default function Login() {
           <p className={classes.accountOperationHint}>Invalid username or password</p>
         }
         { accountOperationHint === "registerSuccess" &&
-          <p className={classes.accountOperationHint}>Account register successfully</p>
+          <p className={classes.accountOperationHint}>Account is registered successfully</p>
         }
         { accountOperationHint === "registerFailed" &&
-          <p className={classes.accountOperationHint}>Account already exist</p>
+          <p className={classes.accountOperationHint}>Account already exists</p>
         }
         <TextField
           id="username"
@@ -156,11 +159,9 @@ export default function Login() {
         />
         <br/>
         <span>
-          {/* <button onClick={login} >Login</button> */}
-          <Button variant="contained" onClick={register} color="primary">
+          <Button className={classes.registerButton} variant="contained" onClick={register} color="primary">
             Register
           </Button>
-          {' '}
           <Button variant="contained" onClick={login} color="primary">
             Login
           </Button>
