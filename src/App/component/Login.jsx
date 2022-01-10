@@ -38,12 +38,12 @@ export default function Login() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [accountOperationHint, setAccountOperationHint] = useState("")
-  const [isWhaOpen, setWhatOpen] = useState(false);
+  const [accountChecking, setAccountChecking] = useState(false);
   const accountCheckingEnd = () => {
-    setWhatOpen(false);
+    setAccountChecking(false);
   };
   const accountCheckingStart = () => {
-    setWhatOpen(!isWhaOpen);
+    setAccountChecking(!accountChecking);
   };
 
   const login = async () => {
@@ -122,7 +122,7 @@ export default function Login() {
 
   return (
     <div className={classes.root}>
-      <Backdrop className={classes.backdrop} open={isWhaOpen}>
+      <Backdrop className={classes.backdrop} open={accountChecking}>
         <CircularProgress color="inherit" />
       </Backdrop>
       <header className="App-header">
