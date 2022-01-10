@@ -45,13 +45,16 @@ export default function Login() {
     setAccountChecking(false);
   };
   const accountCheckingStart = () => {
+    setAccountOperationHint('')
     setAccountChecking(!accountChecking);
   };
 
   const login = async () => {
+    accountCheckingStart()
     if (!(username?.trim()?.length) || !(password?.toString()?.length)) {
       alert("不準啦馬的>///<")
-      return;
+      accountCheckingEnd()
+      return
     }
 
     const credential = {
