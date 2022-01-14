@@ -3,8 +3,8 @@ from os import walk
 
 def start() -> None:
     target_paths: [str] = [
-        './src/App/component/',
-        './src/App/component/DashBoardComponent/'
+        './src/component/',
+        './src/component/DashBoardComponent/'
     ]
 
     replace_from: str = 'http://localhost:9100'

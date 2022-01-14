@@ -26,6 +26,7 @@ jobs:
             ${{ runner.os }}-node-
       - run: npm i -g pnpm
       - run: pnpm i --frozen-lockfile
-      - run: pnpm run build
+      - run: pnpm lint
+      - run: pnpm build
         env:
           NODE_OPTIONS: --openssl-legacy-provider
