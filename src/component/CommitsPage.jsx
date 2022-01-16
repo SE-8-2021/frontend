@@ -112,7 +112,7 @@ function CommitsPage(prop) {
       const query = repo.url.split(`${repo.type}.com/`)[1]
 
       try {
-        await sendPVSBackendRequest('POST', `http://localhost:9100/pvs-api/${repo.type}/commits/${query}`)
+        await sendPVSBackendRequest('POST', `/${repo.type}/commits/${query}`)
         getCommitFromDB()
         setLoading(false)
       }
