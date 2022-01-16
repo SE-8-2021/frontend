@@ -58,11 +58,7 @@ function DuplicationsPage(prop) {
     setLoading(!isLoading)
   }
 
-  const config = {
-    headers: {
-      ...(jwtToken && { Authorization: jwtToken }),
-    },
-  }
+  const headers = { ...(jwtToken && { Authorization: jwtToken }) }
 
   const sendPVSBackendRequest = async(method, url) => {
     const baseURL = 'http://localhost:9100/pvs-api'
@@ -70,7 +66,7 @@ function DuplicationsPage(prop) {
       baseURL,
       url,
       method,
-      config,
+      headers,
     }
     return (await Axios.request(requestConfig))?.data
   }
@@ -140,11 +136,9 @@ function DuplicationsPage(prop) {
       </h2>
       <div className={ classes.chartContainer }>
         <div className={ classes.chart }>
+          <h1>Duplications</h1>
           <div>
-            <h1>Duplications</h1>
-            <div>
-              <DrawingBoard data={ dataForDuplicationChart } maxBoardY={ 100 } id="duplications-chart"/>
-            </div>
+            <DrawingBoard data={ dataForDuplicationChart } maxBoardY={ 100 } id="duplications-chart"/>
           </div>
         </div>
       </div>

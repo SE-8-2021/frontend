@@ -152,11 +152,9 @@ function CodeSmellsPage(prop) {
       </h2>
       <div className={ classes.chartContainer }>
         <div className={ classes.chart }>
+          <h1>Code Smells</h1>
           <div>
-            <h1>Code Smells</h1>
-            <div>
-              <DrawingBoard data={ dataForCodeSmellChart } maxBoardY={ Math.max(...dataForCodeSmellChart.data.codeSmell) + 5 } id="code-smells-chart"/>
-            </div>
+            <DrawingBoard data={ dataForCodeSmellChart } maxBoardY={ Math.max(...dataForCodeSmellChart.data.codeSmell) + 5 } id="code-smells-chart"/>
           </div>
         </div>
       </div>

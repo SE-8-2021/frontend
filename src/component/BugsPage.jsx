@@ -140,12 +140,9 @@ function BugsPage(prop) {
       </h2>
       <div className={ classes.chartContainer }>
         <div className={ classes.chart }>
+          <h1>Bugs</h1>
           <div>
-            <h1>Bugs</h1>
-            <div>
-              <DrawingBoard data={ dataForBugChart } maxBoardY={ Math.max(...dataForBugChart.data.bug) + 5 }
-                id="bugs-chart"/>
-            </div>
+            <DrawingBoard data={ dataForBugChart } maxBoardY={ Math.max(...dataForBugChart.data.bug) + 5 } id="bugs-chart"/>
           </div>
         </div>
       </div>

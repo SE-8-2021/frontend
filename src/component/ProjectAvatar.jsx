@@ -24,7 +24,7 @@ import {
 } from '@mui/material'
 import Axios from 'axios'
 import { setCurrentProjectId } from '../redux/action'
-import defaultAvatar from '../assets/defaultAvatar.png'
+import defaultAvatarUrl from '../assets/images/defaultAvatar.png'
 import AddRepositoryDialog from './AddRepositoryDialog'
 
 const useStyles = makeStyles(theme => ({
@@ -77,9 +77,8 @@ function ProjectAvatar(props) {
   const [projectName, setProjectName] = useState('')
   const [projectNameChangeStatus, setProjectNameChangeStatus] = useState(true)
   const [editButtonShow, setEditButtonShow] = useState(true)
-  const jwt = localStorage.getItem('jwtToken')
 
-  useEffect(() => {
+  const checkExistedRepo = () => {
     if (props.size === 'large') {
       const getGithubRepo = props.project.repositoryDTOList.find(x => x.type === 'github')
       const getGitlabRepo = props.project.repositoryDTOList.find(x => x.type === 'gitlab')
@@ -91,6 +90,10 @@ function ProjectAvatar(props) {
       setHasSonarRepo(getSonarRepo !== undefined)
       setHasTrelloBoard(getTrelloBoard !== undefined)
     }
+  }
+
+  useEffect(() => {
+    checkExistedRepo()
   }, [props.project])
 
   const goToCommit = () => {
@@ -125,16 +128,16 @@ function ProjectAvatar(props) {
     setDeletionAlertDialog(!deletionAlertDialog)
   }
 
-  const deleteProject = () => {
-    Axios.delete(`http://localhost:9100/pvs-api/project/remove/${props.project.projectId}`,
-      { headers: { ...(jwt && { Authorization: jwt }) } }) // If jwt is null, it will return {} to headers. Otherwise it will return {"Authorization": jwt}
-      .then(() => {
-        toggleDeletionAlertDialog()
-        props.reloadProjects()
-      })
-      .catch((e) => {
-        console.error(e)
-      })
+  const deleteProject = async() => {
+    try {
+      await Axios.delete(`http://localhost:9100/pvs-api/project/remove/${props.project.projectId}`)
+      toggleDeletionAlertDialog()
+      props.reloadProjects()
+    }
+    catch (e) {
+      alert(e.response?.status)
+      console.error(e)
+    }
   }
 
   const renameProject = async() => {
@@ -187,7 +190,7 @@ function ProjectAvatar(props) {
             && <Avatar alt="first repository" src={props.project.avatarURL} className={classes.avatar} />
           }
           {props.project.avatarURL === ''
-            && <Avatar alt="first repository" src={defaultAvatar} className={classes.avatar} />
+            && <Avatar alt="first repository" src={defaultAvatarUrl} className={classes.avatar} />
           }
         </CardActionArea>
 

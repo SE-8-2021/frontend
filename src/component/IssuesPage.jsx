@@ -11,13 +11,16 @@ const useStyles = makeStyles(theme => ({
   root: {
     marginLeft: '10px',
   },
-  chart: {
+  chartContainer: {
     'display': 'flex',
     '& > *': {
       margin: theme.spacing(1),
     },
     'minWidth': '30px',
     'alignItems': 'center',
+  },
+  chart: {
+    width: '67%',
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -40,6 +43,7 @@ const useStyles = makeStyles(theme => ({
 
 function IssuesPage(prop) {
   const classes = useStyles()
+  const { startMonth, endMonth } = prop
   const [issueListData, setIssueListData] = useState([])
   const [dataForIssueChart, setDataForIssueChart] = useState({ labels: [], data: { closed: [], created: [] } })
 
@@ -49,79 +53,75 @@ function IssuesPage(prop) {
   const jwtToken = localStorage.getItem('jwtToken')
   const memberId = localStorage.getItem('memberId')
 
-  const [open, setOpen] = useState(false)
-  const handleClose = () => {
-    setOpen(false)
+  const [isLoading, setLoading] = useState(false)
+  const loadingIssuesEnd = () => {
+    setLoading(false)
   }
-  const handleToggle = () => {
-    setOpen(!open)
+  const loadingIssuesStart = () => {
+    setLoading(true)
   }
 
-  useEffect(() => {
-    Axios.get(`http://localhost:9100/pvs-api/project/${memberId}/${projectId}`,
-      { headers: { Authorization: `${jwtToken}` } })
-      .then((response) => {
-        setCurrentProject(response.data)
-      })
-      .catch((e) => {
-        alert(e.response?.status)
-        console.error(e)
-      })
-  }, [])
+  const headers = { ...(jwtToken && { Authorization: jwtToken }) }
 
-  const getIssueFromGitHub = () => {
-    const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
-    if (githubRepo !== undefined) {
-      const query = githubRepo.url.split('github.com/')[1]
+  const sendPVSBackendRequest = async(method, url) => {
+    const baseURL = 'http://localhost:9100/pvs-api'
+    const requestConfig = {
+      baseURL,
+      url,
+      method,
+      headers,
+    }
+    return (await Axios.request(requestConfig))?.data
+  }
 
-      // todo need reafctor with async
-      Axios.get(`http://localhost:9100/pvs-api/github/issues/${query}`,
-        { headers: { Authorization: `${jwtToken}` } })
-        .then((response) => {
-          setIssueListData(response.data)
-        })
-        .catch((e) => {
-          alert(e)
-          console.error(e)
-        })
+  const loadInitialProjectInfo = async() => {
+    try {
+      const response = await sendPVSBackendRequest('GET', `/project/${memberId}/${projectId}`)
+      setCurrentProject(response)
+    }
+    catch (e) {
+      alert(e.response?.status)
+      console.error(e)
     }
   }
 
-  const getIssueFromGitLab = () => {
-    const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
-    if (gitlabRepo !== undefined) {
-      const query = gitlabRepo.url.split('gitlab.com/')[1]
+  useEffect(() => {
+    loadInitialProjectInfo()
+  }, [])
 
-      // todo need refactor with async
-      Axios.get(`http://localhost:9100/pvs-api/gitlab/issues/${query}`,
-        { headers: { Authorization: `${jwtToken}` } })
-        .then((response) => {
-          if (response?.data)
-            setIssueListData(prevArray => ([...prevArray, ...response.data]))
-        })
-        .catch((e) => {
-          alert(e)
-          console.error(e)
-        })
+  const getIssue = async() => {
+    const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
+    const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
+
+    const repo = githubRepo ?? gitlabRepo
+    if (repo !== undefined) {
+      const query = repo.url.split(`${repo.type}.com/`)[1]
+
+      try {
+        const response = await sendPVSBackendRequest('GET', `/${repo.type}/issues/${query}`)
+        setIssueListData(response)
+        loadingIssuesEnd()
+      }
+      catch (e) {
+        alert(e.response?.status)
+        console.error(e)
+        loadingIssuesEnd()
+      }
     }
   }
 
   useEffect(() => {
     if (Object.keys(currentProject).length !== 0) {
-      handleToggle()
-      getIssueFromGitHub()
-      getIssueFromGitLab()
-      handleClose()
+      loadingIssuesStart()
+      getIssue()
     }
   }, [currentProject, prop.startMonth, prop.endMonth])
 
   useEffect(() => {
-    const chartDataset = generateIssueChartDataset()
-    setDataForIssueChart(chartDataset)
+    generateIssueChartDataset()
   }, [issueListData])
 
   const generateIssueChartDataset = () => {
-    const { startMonth, endMonth } = prop
     const chartDataset = { labels: [], data: { closed: [], created: [] } }
     for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months'))
       chartDataset.labels.push(month.format('YYYY-MM'))
@@ -129,14 +129,13 @@ function IssuesPage(prop) {
     chartDataset.data.created = getIssueCreatedCountArray()
     chartDataset.data.closed = getIssueClosedCountArray()
 
-    return chartDataset
+    setDataForIssueChart(chartDataset)
   }
 
   const getIssueCreatedCountArray = () => {
-    const { startMonth, endMonth } = prop
     const created = []
-    const issueListDataSortedByCreatedAt = issueListData
-    issueListDataSortedByCreatedAt.sort((a, b) => a.createdAt - b.createdAt)
+    const issueListDataSortedByCreatedAt = [].slice.call(issueListData).sort((a, b) => a.createdAt - b.createdAt)
+
     if (issueListDataSortedByCreatedAt.length > 0) {
       for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
         const issueCountInSelectedRange = issueListDataSortedByCreatedAt.findIndex((issue) => {
@@ -145,14 +144,14 @@ function IssuesPage(prop) {
         created.push(issueCountInSelectedRange === -1 ? issueListData.length : issueCountInSelectedRange)
       }
     }
+
     return created
   }
 
   const getIssueClosedCountArray = () => {
-    const { startMonth, endMonth } = prop
     const closed = []
-    const issueListDataSortedByClosedAt = issueListData
-    issueListDataSortedByClosedAt.sort((a, b) => a.closedAt - b.closedAt)
+    const issueListDataSortedByClosedAt = [].slice.call(issueListData).sort((a, b) => a.closedAt - b.closedAt)
+
     if (issueListDataSortedByClosedAt.length > 0) {
       for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
         let noCloseCount = 0
@@ -164,12 +163,13 @@ function IssuesPage(prop) {
         closed.push(issueCountInSelectedRange === -1 ? issueListData.length - noCloseCount : issueCountInSelectedRange - noCloseCount)
       }
     }
+
     return closed
   }
 
   return (
     <div className={ classes.root }>
-      <Backdrop className={ classes.backdrop } open={ open }>
+      <Backdrop className={ classes.backdrop } open={ isLoading }>
         <CircularProgress color="inherit" />
       </Backdrop>
       <header className={ classes.header }>
@@ -180,13 +180,11 @@ function IssuesPage(prop) {
         />
         <h2 className={ classes.title }>{currentProject ? currentProject.projectName : ''}</h2>
       </header>
-      <div className={ classes.chart }>
+      <div className={ classes.chartContainer }>
         <div style={ { width: '67%' } }>
+          <h1>Team</h1>
           <div>
-            <h1>Team</h1>
-            <div>
-              <DrawingBoard data={ dataForIssueChart } color='skyblue' id="team-issue-chart" isIssue={ true } />
-            </div>
+            <DrawingBoard data={ dataForIssueChart } color='skyblue' id="team-issue-chart" isIssue={ true } />
           </div>
         </div>
       </div>

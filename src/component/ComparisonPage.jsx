@@ -67,9 +67,11 @@ const useStyles = makeStyles(theme => ({
 
 function ComparisonPage(prop) {
   const classes = useStyles()
+  const { startMonth, endMonth } = prop
+
   const [commitListDataLeft, setCommitListDataLeft] = useState([])
   const [commitListDataRight, setCommitListDataRight] = useState([])
-  const [dataForTeamCommitChart, setDataForTeamCommitChart] = useState({ labels: [], data: {} })
+  const [dataOfComparisonChart, setDataOfComparisonChart] = useState({ labels: [], data: {} })
   const [currentProject, setCurrentProject] = useState({})
 
   const [branchList, setBranchList] = useState([])
@@ -79,150 +81,153 @@ function ComparisonPage(prop) {
 
   const [open, setOpen] = useState(false)
   const [isLoading, setLoading] = useState(false)
-  const handleClose = () => {
+  const loadingCommitsEnd = () => {
     setOpen(false)
   }
-  const handleToggle = () => {
-    setOpen(!open)
+  const loadingCommitsStart = () => {
+    setOpen(true)
   }
 
   const projectId = localStorage.getItem('projectId')
   const memberId = localStorage.getItem('memberId')
 
-  const sendPVSBackendRequest = async(method, url) => {
+  const sendPVSBackendRequest = async(method, url, params) => {
     const baseURL = 'http://localhost:9100/pvs-api'
     const requestConfig = {
       baseURL,
       url,
       method,
+      params,
     }
     return (await Axios.request(requestConfig))?.data
   }
 
-  const loadInitialProjectInfo = () => {
-    sendPVSBackendRequest('GET', `/project/${memberId}/${projectId}`)
-      .then((responseData) => {
-        if (responseData)
-          setCurrentProject(responseData)
-      })
-      .catch((e) => {
-        alert(e)
-        console.error(e)
-      })
+  const loadInitialProjectInfo = async() => {
+    try {
+      const response = await sendPVSBackendRequest('GET', `/project/${memberId}/${projectId}`)
+      setCurrentProject(response)
+    }
+    catch (e) {
+      alert(e.response?.status)
+      console.error(e)
+    }
   }
 
   useEffect(() => {
     loadInitialProjectInfo()
   }, [])
 
-  const updateCommits = () => {
+  const updateCommits = async() => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
 
     // Only GitHub & GitLab repo has comparison page, so repo could only be GitHub or GitLab
-    const repo = githubRepo !== undefined ? githubRepo : gitlabRepo
+    const repo = githubRepo ?? gitlabRepo
     if (repo !== undefined) {
       const query = repo.url.split(`${repo.type}.com/`)[1]
 
-      sendPVSBackendRequest('POST', `http://localhost:9100/pvs-api/${repo.type}/commits/${query}`)
-        .then(() => {
-          getCommitFromDBLeft(leftBranchSelected)
-          getCommitFromDBRight(rightBranchSelected)
-          setLoading(false)
-        })
-        .catch((e) => {
-          alert(e.response?.status)
-          console.error(e)
-        })
+      try {
+        await sendPVSBackendRequest('POST', `http://localhost:9100/pvs-api/${repo.type}/commits/${query}`)
+        getCommitFromDB('left', leftBranchSelected)
+        getCommitFromDB('right', rightBranchSelected)
+        setLoading(false)
+      }
+      catch (e) {
+        alert(e.response?.status)
+        console.error(e)
+      }
     }
   }
 
-  const getCommitFromDBLeft = (branch) => {
+  const getCommitFromDB = async(whichBranch, branchName) => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
 
-    const repo = githubRepo !== undefined ? githubRepo : gitlabRepo
+    const repo = githubRepo ?? gitlabRepo
     if (repo !== undefined) {
       const query = repo.url.split(`${repo.type}.com/`)[1]
       const repoOwner = query.split('/')[0]
       const repoName = query.split('/')[1]
 
-      sendPVSBackendRequest('GET', `/${repo.type}/commits?repoOwner=${repoOwner}&repoName=${repoName}&branchName=${branch}`)
-        .then((responseData) => {
-          if (responseData)
-            setCommitListDataLeft(responseData)
-        })
-        .catch((e) => {
-          alert(e)
-          console.error(e)
-        })
+      try {
+        const response = await sendPVSBackendRequest('GET', `/${repo.type}/commits`, { repoOwner, repoName, branchName })
+        whichBranch === 'left' ? setCommitListDataLeft(response) : setCommitListDataRight(response)
+      }
+      catch (e) {
+        alert(e.response?.status)
+        console.error(e)
+      }
     }
   }
 
-  const getCommitFromDBRight = (branch) => {
+  const getBranches = async() => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
     const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
 
-    const repo = githubRepo !== undefined ? githubRepo : gitlabRepo
-    if (repo !== undefined) {
-      const query = repo.url.split(`${repo.type}.com/`)[1]
-      const repoOwner = query.split('/')[0]
-      const repoName = query.split('/')[1]
-
-      sendPVSBackendRequest('GET', `/${repo.type}/commits?repoOwner=${repoOwner}&repoName=${repoName}&branchName=${branch}`)
-        .then((responseData) => {
-          if (responseData)
-            setCommitListDataRight(responseData)
-        })
-        .catch((e) => {
-          alert(e)
-          console.error(e)
-        })
-    }
-  }
-
-  const getBranches = () => {
-    const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
-    const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
-
-    const repo = githubRepo !== undefined ? githubRepo : gitlabRepo
+    const repo = githubRepo ?? gitlabRepo
     if (repo !== undefined) {
       const query = repo.url.split(`${repo.type}.com/`)[1]
 
-      sendPVSBackendRequest('GET', `/${repo.type}/branchList/${query}`)
-        .then((responseData) => {
-          if (responseData)
-            setBranchList(responseData)
-        })
-        .catch((e) => {
-          alert(e)
-          console.error(e)
-        })
+      try {
+        const response = await sendPVSBackendRequest('GET', `/${repo.type}/branchList/${query}`)
+        setBranchList(response)
+      }
+      catch (e) {
+        alert(e.response?.status)
+        console.error(e)
+      }
     }
   }
 
   const leftDiagramUpdate = (e) => {
     setLeftBranchSelected(e)
-    getCommitFromDBLeft(e)
+    getCommitFromDB('left', e)
     setSelectedBranchList([leftBranchSelected, rightBranchSelected])
   }
 
   const rightDiagramUpdate = (e) => {
     setRightBranchSelected(e)
-    getCommitFromDBRight(e)
+    getCommitFromDB('right', e)
     setSelectedBranchList([leftBranchSelected, rightBranchSelected])
   }
 
   const handleClick = () => setLoading(true)
 
+  const setComparisonChart = () => {
+    const dataset = { labels: [], data: {} }
+    new Set(selectedBranchList).forEach((branch) => {
+      dataset.data[branch] = []
+    })
+
+    for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
+      dataset.labels.push(month.format('YYYY-MM'))
+      for (const branch in dataset.data)
+        dataset.data[branch].push(getCommitCountFromSelectedBranch(branch, month))
+    }
+    setDataOfComparisonChart(dataset)
+  }
+
+  const getCommitCountFromSelectedBranch = (branch, month) => {
+    if (branch !== '' && branch === leftBranchSelected) {
+      return commitListDataLeft.filter((commit) => {
+        return moment(commit.committedDate).format('YYYY-MM') === month.format('YYYY-MM')
+      }).length
+    }
+    if (branch !== '' && branch === rightBranchSelected) {
+      return commitListDataRight.filter((commit) => {
+        return moment(commit.committedDate).format('YYYY-MM') === month.format('YYYY-MM')
+      }).length
+    }
+  }
+
   useEffect(() => {
     if (Object.keys(currentProject).length !== 0) {
-      handleToggle()
+      loadingCommitsStart()
       getBranches()
-      getCommitFromDBLeft(leftBranchSelected)
-      getCommitFromDBRight(rightBranchSelected)
+      getCommitFromDB('left', leftBranchSelected)
+      getCommitFromDB('right', rightBranchSelected)
       setSelectedBranchList([leftBranchSelected, rightBranchSelected])
-      handleClose()
+      loadingCommitsEnd()
     }
   }, [currentProject, prop.startMonth, prop.endMonth, leftBranchSelected, rightBranchSelected])
 
@@ -232,30 +237,8 @@ function ComparisonPage(prop) {
   }, [isLoading])
 
   useEffect(() => {
-    const { startMonth, endMonth } = prop
-    const chartDataset = { labels: [], data: {} }
-    new Set(selectedBranchList).forEach((branch) => {
-      chartDataset.data[branch] = []
-    })
-    for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
-      chartDataset.labels.push(month.format('YYYY-MM'))
-      for (const branch in chartDataset.data) {
-        if (branch !== '') {
-          if (branch === leftBranchSelected) {
-            chartDataset.data[branch].push(commitListDataLeft.filter((commit) => {
-              return moment(commit.committedDate).format('YYYY-MM') === month.format('YYYY-MM')
-            }).length)
-          }
-          else if (branch === rightBranchSelected) {
-            chartDataset.data[branch].push(commitListDataRight.filter((commit) => {
-              return moment(commit.committedDate).format('YYYY-MM') === month.format('YYYY-MM')
-            }).length)
-          }
-        }
-      }
-    }
-    setDataForTeamCommitChart(chartDataset)
-  }, [commitListDataRight, prop.startMonth, prop.endMonth, leftBranchSelected, rightBranchSelected])
+    setComparisonChart()
+  }, [commitListDataLeft, commitListDataRight, prop.startMonth, prop.endMonth, leftBranchSelected, rightBranchSelected])
 
   // in case there is no projectId
   if (!projectId) {
@@ -322,7 +305,7 @@ function ComparisonPage(prop) {
           </div>
 
           <div>
-            <DrawingBoard data={ dataForTeamCommitChart } id="branches-commit-chart" />
+            <DrawingBoard data={dataOfComparisonChart} id="branches-commit-chart" />
           </div>
         </div>
       </div>

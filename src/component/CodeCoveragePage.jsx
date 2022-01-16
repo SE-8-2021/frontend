@@ -140,11 +140,9 @@ function CodeCoveragePage(prop) {
       </h2>
       <div className={ classes.chartContainer }>
         <div className={ classes.chart }>
+          <h1>Code Coverage</h1>
           <div>
-            <h1>Code Coverage</h1>
-            <div>
-              <DrawingBoard data={ dataForCoverageChart } maxBoardY={ 100 } id="code-coverage-chart"/>
-            </div>
+            <DrawingBoard data={ dataForCoverageChart } maxBoardY={ 100 } id="code-coverage-chart"/>
           </div>
         </div>
       </div>

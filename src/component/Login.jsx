@@ -47,7 +47,7 @@ export default function Login() {
   }
   const accountCheckingStart = () => {
     setAccountOperationHint('')
-    setAccountChecking(!accountChecking)
+    setAccountChecking(true)
   }
 
   const login = async() => {
@@ -143,23 +143,23 @@ export default function Login() {
   }
 
   return (
-    <div className={classes.root}>
-      <Backdrop className={classes.backdrop} open={accountChecking}>
-        <CircularProgress color="inherit"/>
+    <div className={ classes.root }>
+      <Backdrop className={ classes.backdrop } open={ accountChecking }>
+        <CircularProgress color="inherit" />
       </Backdrop>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo"/>
         {accountOperationHint === 'InvalidPassword'
-          && <p className={classes.accountOperationHint}>Invalid password</p>
+          && <p className={ classes.accountOperationHint }>Invalid password</p>
         }
         {accountOperationHint === 'InvalidAccount'
-          && <p className={classes.accountOperationHint}>Invalid username or password</p>
+          && <p className={ classes.accountOperationHint }>Invalid username or password</p>
         }
         {accountOperationHint === 'RegisterSuccess'
-          && <p className={classes.accountOperationHintSuccess}>Account is registered successfully</p>
+          && <p className={ classes.accountOperationHintSuccess }>Account is registered successfully</p>
         }
         {accountOperationHint === 'RegisterFailed'
-          && <p className={classes.accountOperationHint}>Account already exists</p>
+          && <p className={ classes.accountOperationHint }>Account already exists</p>
         }
 
         <TextField
@@ -167,10 +167,8 @@ export default function Login() {
           label="Username"
           type="text"
           variant="outlined"
-          value={username}
-          onChange={(e) => {
-            setUsername(e.target.value)
-          }}
+          value={ username }
+          onChange={ (e) => { setUsername(e.target.value) } }
         />
 
         <TextField
@@ -178,17 +176,15 @@ export default function Login() {
           label="Password"
           type="password"
           variant="outlined"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value)
-          }}
+          value={ password }
+          onChange={ (e) => { setPassword(e.target.value) } }
         />
         <br/>
-        <span className={classes.actionButtonContainer}>
-          <Button className={classes.registerButton} variant="contained" onClick={register} color="primary">
+        <span className={ classes.actionButtonContainer }>
+          <Button className={ classes.registerButton } variant="contained" onClick={ register } color="primary">
             Register
           </Button>
-          <Button variant="contained" onClick={login} color="primary">
+          <Button variant="contained" onClick={ login } color="primary">
             Login
           </Button>
         </span>

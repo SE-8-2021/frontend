@@ -53,6 +53,7 @@ const useStyles = makeStyles(theme => ({
 
 function CodeBasePage(prop) {
   const classes = useStyles()
+  const { startMonth, endMonth } = prop
   const [commitListData, setCommitListData] = useState([])
   const [dataForCodeBaseChart, setDataForCodeBaseChart] = useState({ labels: [], data: { additions: [], deletions: [] } })
 
@@ -64,90 +65,81 @@ function CodeBasePage(prop) {
 
   const [open, setOpen] = useState(false)
   const [isLoading, setLoading] = useState(false)
-  const handleClose = () => {
+  const loadingCommitsEnd = () => {
     setOpen(false)
   }
-  const handleToggle = () => {
-    setOpen(!open)
+  const loadingCommitsStart = () => {
+    setOpen(true)
+  }
+
+  const headers = { ...(jwtToken && { Authorization: jwtToken }) }
+
+  const sendPVSBackendRequest = async(method, url) => {
+    const baseURL = 'http://localhost:9100/pvs-api'
+    const requestConfig = {
+      baseURL,
+      url,
+      method,
+      headers,
+    }
+    return (await Axios.request(requestConfig))?.data
+  }
+
+  const loadInitialProjectInfo = async() => {
+    try {
+      const response = await sendPVSBackendRequest('GET', `/project/${memberId}/${projectId}`)
+      setCurrentProject(response)
+    }
+    catch (e) {
+      alert(e.response?.status)
+      console.error(e)
+    }
   }
 
   useEffect(() => {
-    Axios.get(`http://localhost:9100/pvs-api/project/${memberId}/${projectId}`,
-      { headers: { Authorization: `${jwtToken}` } })
-      .then((response) => {
-        setCurrentProject(response.data)
-      })
-      .catch((e) => {
-        alert(e.response?.status)
-        console.error(e)
-      })
+    loadInitialProjectInfo()
   }, [])
 
-  const getCommitFromGitHub = () => {
+  const getCommit = async() => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
-    if (githubRepo !== undefined) {
-      const query = githubRepo.url.split('github.com/')[1]
-      Axios.post(`http://localhost:9100/pvs-api/github/commits/${query}`, '',
-        { headers: { Authorization: `${jwtToken}` } })
-        .then(() => {
-          getGitHubCommitFromDB()
-          setLoading(false)
-        })
-        .catch((e) => {
-          alert(e.response?.status)
-          console.error(e)
-        })
+    const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
+
+    const repo = githubRepo ?? gitlabRepo
+    if (repo !== undefined) {
+      const query = repo.url.split(`${repo.type}.com/`)[1]
+
+      try {
+        await sendPVSBackendRequest('POST', `http://localhost:9100/pvs-api/${repo.type}/commits/${query}`)
+        getCommitFromDB()
+        setLoading(false)
+      }
+      catch (e) {
+        alert(e.response?.status)
+        console.error(e)
+      }
     }
   }
 
-  const getGitHubCommitFromDB = () => {
+  const getCommitFromDB = async() => {
     const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
-    if (githubRepo !== undefined) {
-      const query = githubRepo.url.split('github.com/')[1]
-      // todo need refactor with async
-      Axios.get(`http://localhost:9100/pvs-api/github/commits/${query}`,
-        { headers: { Authorization: `${jwtToken}` } })
-        .then((response) => {
-          setCommitListData(response.data)
-        })
-        .catch((e) => {
-          alert(e.response?.status)
-          console.error(e)
-        })
-    }
-  }
-
-  const getCommitFromGitLab = () => {
     const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
-    if (gitlabRepo !== undefined) {
-      const query = gitlabRepo.url.split('gitlab.com/')[1]
-      Axios.post(`http://localhost:9100/pvs-api/gitlab/commits/${query}`, '',
-        { headers: { Authorization: `${jwtToken}` } })
-        .then(() => {
-          getGitLabCommitFromDB()
-          setLoading(false)
-        })
-        .catch((e) => {
-          alert(e.response?.status)
-          console.error(e)
-        })
-    }
-  }
 
-  const getGitLabCommitFromDB = () => {
-    const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
-    if (gitlabRepo !== undefined) {
-      const query = gitlabRepo.url.split('gitlab.com/')[1]
-      Axios.get(`http://localhost:9100/pvs-api/gitlab/commits/${query}`,
-        { headers: { Authorization: `${jwtToken}` } })
-        .then((response) => {
-          if (response?.data)
-            setCommitListData(previousArray => [...previousArray, ...response.data])
-        })
-        .catch((e) => {
-          alert(e.response?.status)
-          console.error(e)
-        })
+    const repo = githubRepo ?? gitlabRepo
+    if (repo !== undefined) {
+      const query = repo.url.split(`${repo.type}.com/`)[1]
+      const repoOwner = query.split('/')[0]
+      const repoName = query.split('/')[1]
+
+      try {
+        const response = await sendPVSBackendRequest('GET', `/${repo.type}/commits/${repoOwner}/${repoName}`)
+        setCommitListData(response)
+        loadingCommitsEnd()
+      }
+      catch (e) {
+        alert(e.response?.status)
+        console.error(e)
+        loadingCommitsEnd()
+      }
     }
   }
 
@@ -156,10 +148,8 @@ function CodeBasePage(prop) {
   // Default get commits from database
   useEffect(() => {
     if (Object.keys(currentProject).length !== 0) {
-      handleToggle()
-      getGitHubCommitFromDB()
-      getGitLabCommitFromDB()
-      handleClose()
+      loadingCommitsStart()
+      getCommitFromDB()
     }
   }, [currentProject, prop.startMonth, prop.endMonth])
 
@@ -168,35 +158,42 @@ function CodeBasePage(prop) {
     if (isLoading) {
       const githubRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'github')
       const gitlabRepo = currentProject.repositoryDTOList.find(repo => repo.type === 'gitlab')
-      if (githubRepo !== undefined)
-        getCommitFromGitHub()
-
-      if (gitlabRepo !== undefined)
-        getCommitFromGitLab()
+      const repo = githubRepo ?? gitlabRepo
+      if (repo !== undefined)
+        getCommit()
     }
   }, [isLoading])
 
-  useEffect(() => {
-    const { startMonth, endMonth } = prop
+  const pushAdditionsData = (month, dataset) => {
+    dataset.data.additions.push(commitListData.filter((commit) => {
+      return moment(commit.committedDate).format('YYYY-MM') === month.format('YYYY-MM')
+    })
+      .reduce((additionSum, currentCommit) => {
+        return additionSum + currentCommit.additions
+      }, 0))
+  }
 
-    const chartDataset = { labels: [], data: { additions: [], deletions: [] } }
+  const pushDeletionsData = (month, dataset) => {
+    dataset.data.deletions.push(commitListData.filter((commit) => {
+      return moment(commit.committedDate).format('YYYY-MM') === month.format('YYYY-MM')
+    })
+      .reduce((deletionSum, currentCommit) => {
+        return deletionSum - currentCommit.deletions
+      }, 0))
+  }
+
+  const setCodeBaseChart = () => {
+    const dataset = { labels: [], data: { additions: [], deletions: [] } }
     for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months')) {
-      chartDataset.labels.push(month.format('YYYY-MM'))
-
-      chartDataset.data.additions.push(commitListData.filter((commit) => {
-        return moment(commit.committedDate).format('YYYY-MM') === month.format('YYYY-MM')
-      })
-        .reduce((additionSum, currentCommit) => {
-          return additionSum + currentCommit.additions
-        }, 0))
-      chartDataset.data.deletions.push(commitListData.filter((commit) => {
-        return moment(commit.committedDate).format('YYYY-MM') === month.format('YYYY-MM')
-      })
-        .reduce((deletionSum, currentCommit) => {
-          return deletionSum - currentCommit.deletions
-        }, 0))
+      dataset.labels.push(month.format('YYYY-MM'))
+      pushAdditionsData(month, dataset)
+      pushDeletionsData(month, dataset)
     }
-    setDataForCodeBaseChart(chartDataset)
+    setDataForCodeBaseChart(dataset)
+  }
+
+  useEffect(() => {
+    setCodeBaseChart()
   }, [commitListData, prop.startMonth, prop.endMonth])
 
   return (
@@ -219,18 +216,16 @@ function CodeBasePage(prop) {
             disabled={ isLoading }
             onClick={ !isLoading ? handleClick : null }
           >
-            {isLoading ? 'Loading…' : 'reload commits'}
+            {isLoading ? 'Loading…' : 'Reload'}
           </Button>
         </div>
       </header>
 
       <div className={ classes.chartContainer }>
         <div className={ classes.chart }>
+          <h1>Team</h1>
           <div>
-            <h1>Team</h1>
-            <div>
-              <DrawingBoard data={ dataForCodeBaseChart } isCodeBase={ true } id="team-codebase-chart"/>
-            </div>
+            <DrawingBoard data={ dataForCodeBaseChart } isCodeBase={ true } id="team-codebase-chart" />
           </div>
         </div>
       </div>

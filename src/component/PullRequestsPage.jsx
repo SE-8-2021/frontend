@@ -42,6 +42,7 @@ const useStyles = makeStyles(theme => ({
 
 function PullRequestsPage(prop) {
   const classes = useStyles()
+  const { startMonth, endMonth } = prop
   const [pullRequestListData, setPullRequestListData] = useState([])
   const [dataForPullRequestChart, setDataForPullRequestChart] = useState({ labels: [], data: { opened: [], closed: [], merged: [] } })
 
@@ -59,11 +60,23 @@ function PullRequestsPage(prop) {
     setLoading(true)
   }
 
+  const headers = { ...(jwtToken && { Authorization: jwtToken }) }
+
+  const sendPVSBackendRequest = async(method, url) => {
+    const baseURL = 'http://localhost:9100/pvs-api'
+    const requestConfig = {
+      baseURL,
+      url,
+      method,
+      headers,
+    }
+    return (await Axios.request(requestConfig))?.data
+  }
+
   const fetchCurrentProject = async() => {
     try {
-      const response = await Axios.get(`http://localhost:9100/pvs-api/project/${memberId}/${projectId}`,
-        { headers: { Authorization: `${jwtToken}` } })
-      setCurrentProject(response.data)
+      const response = await sendPVSBackendRequest('GET', `/project/${memberId}/${projectId}`)
+      setCurrentProject(response)
     }
     catch (e) {
       alert(e.response?.status)
@@ -80,13 +93,14 @@ function PullRequestsPage(prop) {
     if (githubRepo !== undefined) {
       const query = githubRepo.url.split('github.com/')[1]
       try {
-        const response = await Axios.get(`http://localhost:9100/pvs-api/github/pullRequests/${query}`,
-          { headers: { Authorization: `${jwtToken}` } })
-        setPullRequestListData(response.data)
+        const response = await sendPVSBackendRequest('GET', `/github/pullRequests/${query}`)
+        setPullRequestListData(response)
+        loadingEnd()
       }
       catch (e) {
         alert(e.response?.status)
         console.error(e)
+        loadingEnd()
       }
     }
   }
@@ -95,7 +109,6 @@ function PullRequestsPage(prop) {
     if (Object.keys(currentProject).length !== 0) {
       isLoading()
       getPullRequestsFromGitHub()
-      loadingEnd()
     }
   }, [currentProject, prop.startMonth, prop.endMonth])
 
@@ -103,7 +116,6 @@ function PullRequestsPage(prop) {
   const getPRListSortedBy = (prList, key) => prList.sort((prev, curr) => prev[key] - curr[key])
 
   const generateChartDataset = () => {
-    const { startMonth, endMonth } = prop
     const chartDataset = { labels: [], data: { merged: [], closed: [], created: [] } }
 
     for (let month = moment(startMonth); month <= moment(endMonth); month = month.add(1, 'months'))
@@ -113,17 +125,15 @@ function PullRequestsPage(prop) {
     chartDataset.data.closed = getPRClosedCountArray()
     chartDataset.data.merged = getPRMergedCountArray()
 
-    return chartDataset
+    setDataForPullRequestChart(chartDataset)
   }
 
   // Generate the pull-request chart
   useEffect(() => {
-    const chartDataset = generateChartDataset()
-    setDataForPullRequestChart(chartDataset)
+    generateChartDataset()
   }, [pullRequestListData, prop.startMonth, prop.endMonth])
 
   const getPRCreatedCountArray = () => {
-    const { startMonth, endMonth } = prop
     const prListSortedByCreatedAt = getPRListSortedBy([].slice.call(pullRequestListData), 'createdAt')
     const created = []
 
@@ -141,7 +151,6 @@ function PullRequestsPage(prop) {
   }
 
   const getPRClosedCountArray = () => {
-    const { startMonth, endMonth } = prop
     const prListSortedByClosedAt = getPRListSortedBy([].slice.call(pullRequestListData), 'closedAt')
     const closed = []
     let noCloseCount
@@ -164,7 +173,6 @@ function PullRequestsPage(prop) {
   }
 
   const getPRMergedCountArray = () => {
-    const { startMonth, endMonth } = prop
     const prListSortedByMergedAt = getPRListSortedBy([].slice.call(pullRequestListData), 'mergedAt')
     const merged = []
     let noMergeCount
@@ -205,11 +213,9 @@ function PullRequestsPage(prop) {
       {/* Pull-Request Chart */}
       <div className={ classes.chartContainer }>
         <div className={ classes.chart }>
+          <h1>Team</h1>
           <div>
-            <h1>Team</h1>
-            <div>
-              <DrawingBoard data={ dataForPullRequestChart } color='skyblue' id="team-pull-request-chart" isIssue={ true } />
-            </div>
+            <DrawingBoard data={ dataForPullRequestChart } color='skyblue' id="team-pull-request-chart" isIssue={ true } />
           </div>
         </div>
       </div>
