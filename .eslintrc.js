@@ -5,7 +5,6 @@ module.exports = {
     es2021: true,
   },
   extends: [
-    'standard',
     'plugin:import/recommended',
     'plugin:eslint-comments/recommended',
     'plugin:jsonc/recommended-with-jsonc',
