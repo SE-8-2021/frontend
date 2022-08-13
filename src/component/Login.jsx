@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Backdrop, Button, CircularProgress, TextField } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import Axios from 'axios'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import logo from '../assets/images/welcome.png'
 import './Login.css'
 
@@ -36,7 +36,7 @@ export default function Login() {
   }))
 
   const classes = useStyles()
-  const history = useHistory()
+  const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [accountOperationHint, setAccountOperationHint] = useState('')
@@ -139,7 +139,7 @@ export default function Login() {
   }
 
   const redirectToProjectSelectPage = () => {
-    history.push('/select')
+    navigate('/select')
   }
 
   return (

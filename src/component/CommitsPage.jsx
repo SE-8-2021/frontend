@@ -4,7 +4,7 @@ import { makeStyles } from '@mui/styles'
 import Axios from 'axios'
 import moment from 'moment'
 import { connect } from 'react-redux'
-import { Redirect } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { Button } from 'react-bootstrap'
 import DrawingBoard from './DrawingBoard'
 import ProjectAvatar from './ProjectAvatar'
@@ -213,7 +213,7 @@ function CommitsPage(prop) {
 
   if (!projectId) {
     return (
-      <Redirect to="/select"/>
+      <Navigate to="/select"/>
     )
   }
 

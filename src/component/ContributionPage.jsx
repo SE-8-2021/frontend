@@ -3,7 +3,7 @@ import { Backdrop, CircularProgress } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import Axios from 'axios'
 import { connect } from 'react-redux'
-import { Redirect } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { Button } from 'react-bootstrap'
 import Chart from 'react-google-charts'
 import ProjectAvatar from './ProjectAvatar'
@@ -214,7 +214,7 @@ function ContributionPage(prop) {
 
   if (!projectId) {
     return (
-      <Redirect to="/select" />
+      <Navigate to="/select" />
     )
   }
 

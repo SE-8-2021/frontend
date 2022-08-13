@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { makeStyles } from '@mui/styles'
 import GitHubIcon from '@mui/icons-material/GitHub'
 import { SiGitlab, SiSonarcloud, SiTrello } from 'react-icons/si'
@@ -66,7 +66,7 @@ const useStyles = makeStyles(theme => ({
 
 function ProjectAvatar(props) {
   const classes = useStyles()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const [addRepoDialogOpen, setAddRepoDialogOpen] = useState(false)
   const [hasGithubRepo, setHasGithubRepo] = useState(false)
@@ -99,25 +99,25 @@ function ProjectAvatar(props) {
   const goToCommit = () => {
     localStorage.setItem('projectId', props.project.projectId)
     props.setCurrentProjectId(props.project.projectId)
-    history.push('/commits')
+    navigate('/commits')
   }
 
   const goToCodeCoverage = () => {
     localStorage.setItem('projectId', props.project.projectId)
     props.setCurrentProjectId(props.project.projectId)
-    history.push('/code_coverage')
+    navigate('/code_coverage')
   }
 
   const goToDashboard = () => {
     localStorage.setItem('projectId', props.project.projectId)
     props.setCurrentProjectId(props.project.projectId)
-    history.push('/dashboard')
+    navigate('/dashboard')
   }
 
   const goToTrelloBoard = () => {
     localStorage.setItem('projectId', props.project.projectId)
     props.setCurrentProjectId(props.project.projectId)
-    history.push('/trello_board')
+    navigate('/trello_board')
   }
 
   const showAddRepoDialog = () => {
