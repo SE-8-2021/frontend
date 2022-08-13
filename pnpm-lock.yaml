@@ -5,19 +5,22 @@ specifiers:
   '@babel/core': ^7.18.10
   '@babel/eslint-parser': ^7.18.9
   '@babel/preset-react': ^7.18.6
-  '@date-io/moment': ^2.15.0
+  '@date-io/moment': ^1.3.13
   '@emotion/react': ^11.10.0
   '@emotion/styled': ^11.10.0
   '@mui/icons-material': ^5.8.4
   '@mui/lab': ^5.0.0-alpha.94
   '@mui/material': ^5.10.0
   '@mui/styles': ^5.9.3
+  '@mui/system': ^5.10.0
+  '@mui/x-date-pickers': 5.0.0-beta.5
   '@progress/kendo-licensing': ^1.2.2
   '@progress/kendo-react-animation': ^5.5.0
   '@progress/kendo-react-intl': ^5.5.0
   '@progress/kendo-react-layout': ^5.5.0
   '@progress/kendo-react-progressbars': ^5.5.0
   '@progress/kendo-theme-material': ^5.6.0
+  '@reduxjs/toolkit': ^1.8.4
   '@vitejs/plugin-react': ^2.0.1
   axios: ^0.27.2
   chart.js: 3.5.1
@@ -36,26 +39,28 @@ specifiers:
   react-redux: ^8.0.2
   react-router-dom: ^6.3.0
   react-trello: ^2.2.11
-  redux: ^4.2.0
   styled-components: ^5.3.5
   typescript: ^4.7.4
   vite: ^3.0.7
   vite-plugin-html: ^3.2.0
 
 dependencies:
-  '@date-io/moment': 2.15.0_moment@2.29.4
+  '@date-io/moment': 1.3.13_moment@2.29.4
   '@emotion/react': 11.10.0_byq7oc57qftat37gkdlgphtura
   '@emotion/styled': 11.10.0_oomnx7ap4ibezxcccjc36aeoh4
   '@mui/icons-material': 5.8.4_7cbaqbgp3vjpyvhjjccag2533q
   '@mui/lab': 5.0.0-alpha.94_biqlxihflvbyaqhlt4x5kpvsou
   '@mui/material': 5.10.0_tyh4ta3a3jg5wknldy4g2a7uiy
   '@mui/styles': 5.9.3_react@18.2.0
+  '@mui/system': 5.10.0_rq3l25qc4qpq3j4w6o4x7hatzy
+  '@mui/x-date-pickers': 5.0.0-beta.5_6ahy3l242s3sxuor2n7eey77fq
   '@progress/kendo-licensing': 1.2.2
   '@progress/kendo-react-animation': 5.5.0_zcvq326vr2soowhhzd5vzc5xiq
   '@progress/kendo-react-intl': 5.5.0_zcvq326vr2soowhhzd5vzc5xiq
   '@progress/kendo-react-layout': 5.5.0_hptzldxr3lmzyt2lixoh65n5nu
   '@progress/kendo-react-progressbars': 5.5.0_zaj5xtivnzx43gpr7hks6lny44
   '@progress/kendo-theme-material': 5.6.0
+  '@reduxjs/toolkit': 1.8.4_kkwg4cbsojnjnupd3btipussee
   axios: 0.27.2
   chart.js: 3.5.1
   clsx: 1.2.1
@@ -68,10 +73,9 @@ dependencies:
   react-google-charts: 3.0.15_3bsg7idxxazmtsqzddt2xlcgzi
   react-icons: 4.4.0_react@18.2.0
   react-is: 18.2.0
-  react-redux: 8.0.2_e42enmjmqb4imi3q3iaq2rrebm
+  react-redux: 8.0.2_biqbaboplfbrettd7655fr4n2y
   react-router-dom: 6.3.0_biqbaboplfbrettd7655fr4n2y
   react-trello: 2.2.11_x5gy7w7geadgx3xnvmrhdb5j3a
-  redux: 4.2.0
   styled-components: 5.3.5_7i5myeigehqah43i5u7wbekgba
 
 devDependencies:
@@ -506,8 +510,54 @@ packages:
       '@babel/helper-validator-identifier': 7.18.6
       to-fast-properties: 2.0.0
 
+  /@date-io/core/1.3.13:
+    resolution: {integrity: sha512-AlEKV7TxjeK+jxWVKcCFrfYAk8spX9aCyiToFIiLPtfQbsjmRGLIhb5VZgptQcJdHtLXo7+m0DuurwFgUToQuA==}
+    dev: false
+
   /@date-io/core/2.15.0:
     resolution: {integrity: sha512-3CRvQUEK7aF87NUOwcTtmJ2Rc1kN0D4jFQUfRoanuAnE4o5HzHx4E2YenjaKjSPWeZYiWG6ZhDomx5hp1AaCJA==}
+    dev: false
+
+  /@date-io/date-fns/2.15.0:
+    resolution: {integrity: sha512-hkVeLm0jijHS2F9YVQcf0LSlD55w9xPvvIfuxDE0XWNXOTcRAAhqw2aqOxyeGbmHxc5U4HqyPZaqs9tfeTsomQ==}
+    peerDependencies:
+      date-fns: ^2.0.0
+    peerDependenciesMeta:
+      date-fns:
+        optional: true
+    dependencies:
+      '@date-io/core': 2.15.0
+    dev: false
+
+  /@date-io/dayjs/2.15.0:
+    resolution: {integrity: sha512-wgYzwaXr9KxkHNYxrOb1t8fYLfAdjIf0Q86qdVCwANObcvyGcPBm0uFtpPK7ApeE4DJUlbuG0IX75TtO+uITwQ==}
+    peerDependencies:
+      dayjs: ^1.8.17
+    peerDependenciesMeta:
+      dayjs:
+        optional: true
+    dependencies:
+      '@date-io/core': 2.15.0
+    dev: false
+
+  /@date-io/luxon/2.15.0:
+    resolution: {integrity: sha512-CxTRCo5AM96ainnYaTpe1NS9GiA78SIgXBScgeAresCS20AvMcOd5XKerDj+y/KLhbSQbU6WUDqG9QcsrImXyQ==}
+    peerDependencies:
+      luxon: ^1.21.3 || ^2.x
+    peerDependenciesMeta:
+      luxon:
+        optional: true
+    dependencies:
+      '@date-io/core': 2.15.0
+    dev: false
+
+  /@date-io/moment/1.3.13_moment@2.29.4:
+    resolution: {integrity: sha512-3kJYusJtQuOIxq6byZlzAHoW/18iExJer9qfRF5DyyzdAk074seTuJfdofjz4RFfTd/Idk8WylOQpWtERqvFuQ==}
+    peerDependencies:
+      moment: ^2.24.0
+    dependencies:
+      '@date-io/core': 1.3.13
+      moment: 2.29.4
     dev: false
 
   /@date-io/moment/2.15.0_moment@2.29.4:
@@ -959,6 +1009,55 @@ packages:
       react-is: 18.2.0
     dev: false
 
+  /@mui/x-date-pickers/5.0.0-beta.5_6ahy3l242s3sxuor2n7eey77fq:
+    resolution: {integrity: sha512-pCVNSHuAcndEJACVS/v2AKBSXemqmhzVvOdsPS9hOIOzGSYawrbCEuhI9+o0/NR/pFLz+JcIYrnVV/Zx8f2ZEw==}
+    engines: {node: '>=12.0.0'}
+    peerDependencies:
+      '@emotion/react': ^11.9.0
+      '@emotion/styled': ^11.8.1
+      '@mui/material': ^5.4.1
+      '@mui/system': ^5.4.1
+      date-fns: ^2.25.0
+      dayjs: ^1.10.7
+      luxon: ^1.28.0 || ^2.0.0 || ^3.0.0
+      moment: ^2.29.1
+      react: ^17.0.2 || ^18.0.0
+      react-dom: ^17.0.2 || ^18.0.0
+    peerDependenciesMeta:
+      '@emotion/react':
+        optional: true
+      '@emotion/styled':
+        optional: true
+      date-fns:
+        optional: true
+      dayjs:
+        optional: true
+      luxon:
+        optional: true
+      moment:
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.18.9
+      '@date-io/core': 2.15.0
+      '@date-io/date-fns': 2.15.0
+      '@date-io/dayjs': 2.15.0
+      '@date-io/luxon': 2.15.0
+      '@date-io/moment': 2.15.0_moment@2.29.4
+      '@emotion/react': 11.10.0_byq7oc57qftat37gkdlgphtura
+      '@emotion/styled': 11.10.0_oomnx7ap4ibezxcccjc36aeoh4
+      '@mui/material': 5.10.0_tyh4ta3a3jg5wknldy4g2a7uiy
+      '@mui/system': 5.10.0_rq3l25qc4qpq3j4w6o4x7hatzy
+      '@mui/utils': 5.9.3_react@18.2.0
+      '@types/react-transition-group': 4.4.5
+      clsx: 1.2.1
+      moment: 2.29.4
+      prop-types: 15.7.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      react-transition-group: 4.4.5_biqbaboplfbrettd7655fr4n2y
+      rifm: 0.12.1_react@18.2.0
+    dev: false
+
   /@nodelib/fs.scandir/2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -1113,6 +1212,25 @@ packages:
     dependencies:
       '@babel/runtime': 7.18.9
       react: 18.2.0
+    dev: false
+
+  /@reduxjs/toolkit/1.8.4_kkwg4cbsojnjnupd3btipussee:
+    resolution: {integrity: sha512-IpFq1WI7sCYeLQpDCGvlcQY9wn70UpAM3cOLq78HRnVn1746RI+l3y5xcuOeVOxORaxABJh3cfJMxycD2IwH5w==}
+    peerDependencies:
+      react: ^16.9.0 || ^17.0.0 || ^18
+      react-redux: ^7.2.1 || ^8.0.2
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-redux:
+        optional: true
+    dependencies:
+      immer: 9.0.15
+      react: 18.2.0
+      react-redux: 8.0.2_biqbaboplfbrettd7655fr4n2y
+      redux: 4.2.0
+      redux-thunk: 2.4.1_redux@4.2.0
+      reselect: 4.1.6
     dev: false
 
   /@restart/context/2.1.4_react@18.2.0:
@@ -2926,6 +3044,10 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
+  /immer/9.0.15:
+    resolution: {integrity: sha512-2eB/sswms9AEUSkOm4SbV5Y7Vmt/bKRwByd52jfLkW4OLYeaTP3EEiJ9agqU0O/tq6Dk62Zfj+TJSqfm1rLVGQ==}
+    dev: false
+
   /immutability-helper/2.9.1:
     resolution: {integrity: sha512-r/RmRG8xO06s/k+PIaif2r5rGc3j4Yhc01jSBfwPCXDLYZwp/yxralI37Df1mwmuzcCsen/E/ITKcTEvc1PQmQ==}
     dependencies:
@@ -3857,7 +3979,7 @@ packages:
       redux: 4.2.0
     dev: false
 
-  /react-redux/8.0.2_e42enmjmqb4imi3q3iaq2rrebm:
+  /react-redux/8.0.2_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-nBwiscMw3NoP59NFCXFf02f8xdo+vSHT/uZ1ldDwF7XaTpzm+Phk97VT4urYBl5TYAPNVaFm12UHAEyzkpNzRA==}
     peerDependencies:
       '@types/react': ^16.8 || ^17.0 || ^18.0
@@ -3885,7 +4007,6 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-is: 18.2.0
-      redux: 4.2.0
       use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
@@ -4001,6 +4122,14 @@ packages:
       deep-diff: 0.3.8
     dev: false
 
+  /redux-thunk/2.4.1_redux@4.2.0:
+    resolution: {integrity: sha512-OOYGNY5Jy2TWvTL1KgAlVy6dcx3siPJ1wTq741EPyUKfn6W6nChdICjZwCd0p8AZBs5kWpZlbkXW2nE/zjUa+Q==}
+    peerDependencies:
+      redux: ^4
+    dependencies:
+      redux: 4.2.0
+    dev: false
+
   /redux/4.2.0:
     resolution: {integrity: sha512-oSBmcKKIuIR4ME29/AeNUnl5L+hvBq7OaJWzaptTQJAntaPvxIJqfnjbaEiCzzaIz+XmVILfqAM3Ob0aXLPfjA==}
     dependencies:
@@ -4035,6 +4164,10 @@ packages:
     engines: {node: '>= 0.10'}
     dev: true
 
+  /reselect/4.1.6:
+    resolution: {integrity: sha512-ZovIuXqto7elwnxyXbBtCPo9YFEr3uJqj2rRbcOOog1bmu2Ag85M4hixSwFWyaBMKXNgvPaJ9OSu9SkBPIeJHQ==}
+    dev: false
+
   /resolve-from/4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}
     engines: {node: '>=4'}
@@ -4060,6 +4193,14 @@ packages:
     resolution: {integrity: sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==}
     engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
     dev: true
+
+  /rifm/0.12.1_react@18.2.0:
+    resolution: {integrity: sha512-OGA1Bitg/dSJtI/c4dh90svzaUPt228kzFsUkJbtA2c964IqEAwWXeL9ZJi86xWv3j5SMqRvGULl7bA6cK0Bvg==}
+    peerDependencies:
+      react: '>=16.8'
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /rimraf/3.0.2:
     resolution: {integrity: sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==}
