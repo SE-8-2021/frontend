@@ -21,6 +21,9 @@ module.exports = {
     'import/resolver': {
       node: { extensions: ['.js', '.mjs', 'cjs', '.jsx'] },
     },
+    'react': {
+      'version': 'detect',
+    }
   },
   overrides: [
     {
