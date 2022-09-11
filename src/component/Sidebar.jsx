@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import ExitToApp from '@mui/icons-material/ExitToApp'
 import ArrowBack from '@mui/icons-material/ArrowBack'
 import ExpandLess from '@mui/icons-material/ExpandLess'
@@ -120,7 +120,7 @@ function Sidebar(prop) {
   // todo separate sidebar and appbar~~~
 
   const open = useState(true)[0]
-  const navigate = useNavigate()
+  const history = useHistory()
   const classes = useStyles()
   const [currentProject, setCurrentProject] = useState(undefined)
   const [githubMenuOpen, setGithubMenuOpen] = useState(true)
@@ -257,59 +257,59 @@ function Sidebar(prop) {
 
   const logout = () => {
     localStorage.clear()
-    navigate('/login')
+    history.push('/login')
   }
 
   const goToSelect = () => {
-    navigate('/select')
+    history.push('/select')
   }
 
   const goToDashBoard = () => {
-    navigate('/dashboard')
+    history.push('/dashboard')
   }
 
   const goToCommit = () => {
-    navigate('/commits')
+    history.push('/commits')
   }
 
   const goToIssue = () => {
-    navigate('/issues')
+    history.push('/issues')
   }
 
   const goToPullRequest = () => {
-    navigate('/pull_requests')
+    history.push('/pull_requests')
   }
 
   const goToCodeBase = () => {
-    navigate('/codebase')
+    history.push('/codebase')
   }
 
   const goToComparison = () => {
-    navigate('/comparison')
+    history.push('/comparison')
   }
 
   const goToContribution = () => {
-    navigate('/contribution')
+    history.push('/contribution')
   }
 
   const goToCodeCoverage = () => {
-    navigate('/code_coverage')
+    history.push('/code_coverage')
   }
 
   const goToBug = () => {
-    navigate('/bugs')
+    history.push('/bugs')
   }
 
   const goToCodeSmell = () => {
-    navigate('/code_smells')
+    history.push('/code_smells')
   }
 
   const goToDuplication = () => {
-    navigate('/duplications')
+    history.push('/duplications')
   }
 
   const goToTrelloBoard = () => {
-    navigate('/trello_board')
+    history.push('/trello_board')
   }
 
   const jwtToken = localStorage.getItem('jwtToken')

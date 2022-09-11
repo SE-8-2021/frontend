@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Redirect, Route, Switch } from 'react-router-dom'
 import axios from 'axios'
 import Container from '../component/Container'
 import { randomHash } from '../utils'
@@ -8,7 +8,7 @@ import routes from './Routes'
 function ProtectedRoute({ component: Component, ...rest }) {
   const jwtToken = localStorage.getItem('jwtToken')
   if (!jwtToken)
-    return <Navigate to="/login"/>
+    return <Redirect to="/login"/>
 
   return (
     <Route { ...rest } render={ routeProps => (
@@ -24,14 +24,14 @@ export default function AllRoutes() {
   if (jwt) axios.defaults.headers.common.Authorization = jwt
 
   return (
-    <Routes>
+    <Switch>
       {routes.map(prop =>
         prop.redirect
-          ? <Navigate key={ randomHash() } exact from={ prop.path } to={ prop.to }/>
+          ? <Redirect key={ randomHash() } exact from={ prop.path } to={ prop.to }/>
           : prop.loginRequired
             ? <ProtectedRoute key={ randomHash() } path={ prop.path } component={ prop.component }/>
             : <Route key={ randomHash() } path={ prop.path } component={ prop.component }/>,
       )}
-    </Routes>
+    </Switch>
   )
 }
