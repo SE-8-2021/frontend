@@ -28,7 +28,7 @@ export default function AllRoutes() {
           ? <Route key={randomHash()} exact path={prop.path} element={<Navigate to={prop.to}/>}/>
           : prop.loginRequired
             ? <Route key={randomHash()} path={prop.path} element={<ProtectedRoute component={prop.component}/>}/>
-            : <Route key={randomHash()} path={prop.path} element={prop.component?.call()}/>,
+            : <Route key={randomHash()} path={prop.path} component={prop.component}/>,
       )}
     </Routes>
   )
