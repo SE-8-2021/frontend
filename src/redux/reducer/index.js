@@ -1,4 +1,4 @@
-import { combineReducers } from '@reduxjs/toolkit'
+import { combineReducers } from 'redux'
 import selectedMonthReducer from './monthSelector'
 import currentProjectIdReducer from './currentProjectId'
 

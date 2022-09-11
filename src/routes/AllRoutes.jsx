@@ -11,9 +11,11 @@ function ProtectedRoute({ component: Component, ...rest }) {
     return <Navigate to="/login"/>
 
   return (
-    <Container>
-      <Component {...rest}/>
-    </Container>
+    <Route { ...rest } render={ routeProps => (
+      <Container>
+        <Component { ...routeProps }/>
+      </Container>
+    ) }/>
   )
 }
 
@@ -25,10 +27,10 @@ export default function AllRoutes() {
     <Routes>
       {routes.map(prop =>
         prop.redirect
-          ? <Route key={randomHash()} exact path={prop.path} element={<Navigate to={prop.to}/>}/>
+          ? <Navigate key={ randomHash() } exact from={ prop.path } to={ prop.to }/>
           : prop.loginRequired
-            ? <Route key={randomHash()} path={prop.path} element={<ProtectedRoute component={prop.component}/>}/>
-            : <Route key={randomHash()} path={prop.path} component={prop.component}/>,
+            ? <ProtectedRoute key={ randomHash() } path={ prop.path } component={ prop.component }/>
+            : <Route key={ randomHash() } path={ prop.path } component={ prop.component }/>,
       )}
     </Routes>
   )
